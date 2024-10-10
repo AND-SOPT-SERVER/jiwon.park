@@ -1,28 +1,52 @@
 package org.sopt.seminar1;
 
+import java.io.IOException;
 import java.util.List;
 
 public class DiaryService {
-    private final DiaryRepository diaryRepository = new DiaryRepository();
 
-    void writeDiary(final String body){
-        final Diary diary = new Diary(null, body);
-        diaryRepository.save(diary);
+    private final DiaryRepository diaryRepository= new DiaryRepository();
+
+    void writeDiary(final String body) {
+        final Diary diary = new Diary(0L, body, false, 0);
+        boolean success = diaryRepository.save(diary);
+        if (!success) {
+            System.out.println("일기 저장 중 오류 발생. 다시 시도해 주세요.");
+        }
+
     }
 
     List<Diary> getDiaryList(){
         return diaryRepository.findAll();
     }
 
-    public void delete(String id) {
-        // 저장된 다이어리 리스트가 id 보다 클 경우
+     void delete(String id) {
         long ID = Long.parseLong(id);
-        diaryRepository.Delete(ID);
+        diaryRepository.delete(ID);
     }
 
-    public void update(String id, String body) {
+     void update(String id, String body) {
         long ID = Long.parseLong(id);
-        final Diary diary = new Diary(ID, body);
+        final Diary diary = new Diary(ID, body,false,+1);
         diaryRepository.update(diary);
+    }
+
+     void restore(final String id) {
+        long ID = Long.parseLong(id);
+//         diaryRepository.restore(ID);
+    }
+
+
+
+    boolean validation(final Diary diary){
+        if ( diary.getBody().equals("")) {
+            System.out.println("내용을 정확하게 입력해주세요");
+            return false;
+
+        } else if (diary.getBody().length() > 30) {
+            System.out.println("30자 이내로 입력해주세요");
+            return false;
+        }
+        return true;
     }
 }

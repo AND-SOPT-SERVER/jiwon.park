@@ -47,7 +47,6 @@ public class Main {
                     } catch (InvalidInputException e) {
                         ConsoleIO.printLine("잘못된 값을 입력하였습니다.");
                     }
-
                     if (isFinished()) {
                         ConsoleIO.printLine(getFinishMessage());
                         break;
@@ -58,53 +57,51 @@ public class Main {
             }
 
             private void run() throws IOException {
-                switch (server.getStatus()) {
-                    case READY, FINISHED, ERROR -> throw new UIException();
-
-                    case RUNNING -> {
-                        switch (selected) {
-                            case "GET" -> {
-                                server.getList().forEach(diary -> {
-                                    try {
-                                        ConsoleIO.printLine(diary.getId() +" : "+diary.getBody());
-                                    } catch (IOException e) {
-                                        throw new RuntimeException(e);
-                                    }
-                                });
-                            }
-                            case "POST" -> {
-                                ConsoleIO.printLine("한 줄 일기를 작성해주세요!");
-                                final String input = ConsoleIO.readLine();
-                                server.post(input);
-                            }
-
-                            case "DELETE" -> {
-                                ConsoleIO.printLine("삭제할 id 를 입력하세요!");
-                                final String input = ConsoleIO.readLine();
-                                server.delete(input);
-                            }
-                            case "PATCH" -> {
-                                ConsoleIO.printLine("수정할 id 를 입력하세요!");
-                                final String inputId = ConsoleIO.readLine();
-
-                                ConsoleIO.printLine("수정 body 를 입력하세요!");
-                                final String inputBody = ConsoleIO.readLine();
-
-                                server.patch(inputId, inputBody);
-                            }
-
-
-                            case "FINISH" -> {
-                                server.finish();
-                            }
-                            default -> {
-                                throw new InvalidInputException();
+                try {
+                    switch (server.getStatus()) {
+                        case READY, FINISHED, ERROR -> throw new UIException();
+                        case RUNNING -> {
+                            switch (selected) {
+                                case "GET" -> {
+                                    server.getList().forEach(diary -> {
+                                        try {
+                                            ConsoleIO.printLine(diary.getId() + " : " + diary.getBody());
+                                        } catch (IOException e) {
+                                            throw new RuntimeException(e);
+                                        }
+                                    });
+                                }
+                                case "POST" -> {
+                                    ConsoleIO.printLine("한 줄 일기를 작성해주세요!");
+                                    final String input = ConsoleIO.readLine();
+                                    server.post(input);
+                                }
+                                case "DELETE" -> {
+                                    ConsoleIO.printLine("삭제할 id 를 입력하세요!");
+                                    final String input = ConsoleIO.readLine();
+                                    server.delete(input);
+                                }
+                                case "PATCH" -> {
+                                    ConsoleIO.printLine("수정할 id 를 입력하세요!");
+                                    final String inputId = ConsoleIO.readLine();
+                                    ConsoleIO.printLine("수정 body 를 입력하세요!");
+                                    final String inputBody = ConsoleIO.readLine();
+                                    server.patch(inputId, inputBody);
+                                }
+                                case "FINISH" -> {
+                                    server.finish();
+                                }
+                                default -> throw new InvalidInputException();
                             }
                         }
                     }
-
+                } catch (IOException e) {
+                    ConsoleIO.printLine("입출력 오류 발생: " + e.getMessage());
+                } catch (Exception e) {
+                    ConsoleIO.printLine("오류 발생: " + e.getMessage());
                 }
             }
+
 
             private boolean isRunning() {
                 return server.getStatus() == DiaryController.Status.RUNNING;

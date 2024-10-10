@@ -6,9 +6,14 @@ public class Diary {
 
     private final String body;
 
-    public Diary(Long id, String body){
+    private boolean isDelete;
+    private  int updateCount;
+
+    public Diary(Long id, String body,boolean isDelete,int updateCount){
         this.id = id;
         this.body=body;
+        this.isDelete=isDelete;
+        this.updateCount = updateCount;
     }
 
     public Long getId() {
@@ -17,5 +22,17 @@ public class Diary {
 
     public String getBody() {
         return body;
+    }
+
+    public boolean getIsDelete(){return isDelete;}
+
+    public int getUpdateCount(){return  updateCount;}
+
+    void setDelete(){
+        this.isDelete=true;
+    }
+
+    void setId(long id){
+        this.id = id;
     }
 }
