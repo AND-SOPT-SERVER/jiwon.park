@@ -33,20 +33,8 @@ public class DiaryService {
 
      void restore(final String id) {
         long ID = Long.parseLong(id);
-//         diaryRepository.restore(ID);
+         diaryRepository.restore(ID);
     }
 
 
-
-    boolean validation(final Diary diary){
-        if ( diary.getBody().equals("")) {
-            System.out.println("내용을 정확하게 입력해주세요");
-            return false;
-
-        } else if (diary.getBody().length() > 30) {
-            System.out.println("30자 이내로 입력해주세요");
-            return false;
-        }
-        return true;
-    }
 }

@@ -1,7 +1,5 @@
 
-3/patch/N/0
-4/dd/N/0
-5/dd/N/0
-6/jiwon/N/0
-7/ge/N/0
-8/ji/N/0
+1/수정후후/false/2
+2/nono/false/0
+3/hihi/false/0
+4/jiwon/false/0

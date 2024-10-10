@@ -61,11 +61,12 @@ public class FileHandler {
 
         for (String line : lines) {
             String[] data = line.split("/");
+            //저장형식이 [id/body/delYn/updateCount] 이기 때문
             if (data.length == 4) {
                 try {
                     long id = Long.parseLong(data[0]);
                     String body = data[1];
-                    boolean isDeleted = "Y".equals(data[2]);
+                    boolean isDeleted = Boolean.parseBoolean(data[2]);
                     int updateCount = Integer.parseInt(data[3]);
 
                     Diary diary = new Diary(id, body, isDeleted, updateCount);

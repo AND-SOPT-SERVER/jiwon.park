@@ -28,11 +28,15 @@ public class Diary {
 
     public int getUpdateCount(){return  updateCount;}
 
-    void setDelete(){
-        this.isDelete=true;
+    void setDelete(boolean isDel) {
+        this.isDelete = isDel;
     }
 
     void setId(long id){
         this.id = id;
+    }
+
+    public void setUpdateCount(int i) {
+        this.updateCount = i;
     }
 }
