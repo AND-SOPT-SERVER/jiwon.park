@@ -20,30 +20,45 @@ public class DiaryController {
             this.status = Status.FINISHED;
         }
 
+        private final int MAX_LENGTH=30;
+
         // APIS
         final List<Diary> getList() {
             return diaryService.getDiaryList();
         }
 
         final void post(final String body) {
-            // 이런 경우 아랍아가 들어올 수 도 있고, 이모지가 들어올 때 어떻게 처리할지
             // 보통 바이트 수
-            if(body.length()>30){
-                throw new IllegalArgumentException();
+            if(validation(body)) {
+                diaryService.writeDiary(body);
             }
-            diaryService.writeDiary(body);
-
         }
 
         final void delete(final String id) {
-            diaryService.delete(id);
+            diaryService.deleteDiary(Long.parseLong(id));
         }
 
         final void patch(final String id, final String body) {
-            diaryService.update(id, body);
+            if(validation(body)) {
+                long ID = Long.parseLong(id);
+                Diary diary = new Diary(ID, body);
+                diaryService.update(diary);
+            }
         }
+     void restore(final String id) {
+         diaryService.restore(Long.parseLong(id));
 
-        enum Status {
+    }
+    boolean validation(final String body){
+
+            if(body.length() > MAX_LENGTH ||body.trim().isBlank() ){
+                System.out.println("1~30 글자수를 맞춰주세요");
+                return false;
+            }
+         return true;
+    }
+
+    enum Status {
             READY,
             RUNNING,
             FINISHED,
