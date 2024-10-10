@@ -1,192 +1,166 @@
 package org.sopt.seminar1;
 
-
-import java.util.*;
-import java.util.concurrent.atomic.AtomicLong;
+import java.util.ArrayList;
+import java.util.List;
 
 public class DiaryRepository {
-
     private final String filePath = "diary.txt";
     private final FileHandler fileHandler = new FileHandler(filePath);
 
     /**
-     * 다이어리를 파일에 저장하는 메소드
+     * 단일 Diary 저장 하는 메서드
+     * @param diary
+     * @return
      */
     boolean save(final Diary diary) {
         List<Diary> diaryList = getDiaryList();
+        diary.setId(getNextDiaryId(diaryList));
+        return fileHandler.saveToFile(diaryToString(diary), true);
+    }
 
-        // 마지막 ID 찾고 새로운 다이어리 ID 설정
-        long lastId = diaryList.stream()
+    /**
+     * 다음 ID 찾기
+     * @param diaryList
+     * @return
+     */
+     long getNextDiaryId(List<Diary> diaryList) {
+        return diaryList.stream()
                 .mapToLong(Diary::getId)
                 .max()
-                .orElse(0);
-
-        diary.setId(lastId + 1); // ID는 마지막 ID + 1
-        String data = diaryToString(diary);
-
-        // 파일에 다이어리 데이터를 저장
-        return fileHandler.saveToFile(data, true); // append 모드로 저장
+                .orElse(0) + 1;
     }
 
     /**
-     * 삭제되지 않은 다이어리 리스트 반환
+     * 삭제하지 않은 다이어리 리스트 반환
+     * @return
      */
-    List<Diary> findAll() {
-        final List<Diary> diaryListAll = getDiaryList();
-        final List<Diary> diaryList = new ArrayList<>();
-
-        // 삭제되지 않은 다이어리만 필터링
-        for (Diary diary : diaryListAll) {
-            if (!diary.getIsDelete()) {
-                diaryList.add(diary);
-            }
-        }
-        return diaryList;
+     List<Diary> findAll() {
+        return getDiaryList().stream()
+                .filter(diary -> !diary.getIsDelete())
+                .toList();
     }
 
     /**
-     * 파일에서 전체 다이어리 리스트를 받아오는 메소드
+     * 모든 다이어리 리스트 반환
+     * @return
      */
-    List<Diary> getDiaryList() {
+     List<Diary> getDiaryList() {
         return fileHandler.getDiaryList();
     }
 
     /**
-     * 다이어리를 업데이트하는 메소드
+     * 업데이트 로직
+     * @param updatedDiary
      */
-    void update(final Diary updatedDiary) {
+
+     void update(final Diary updatedDiary) {
         List<Diary> diaryListAll = getDiaryList();
         boolean found = false;
 
         for (int i = 0; i < diaryListAll.size(); i++) {
             Diary diary = diaryListAll.get(i);
-
-            // 해당 ID의 다이어리를 찾아 업데이트
-                if (diary.getId() == updatedDiary.getId() && !diary.getIsDelete()) {
-                    // 수정 횟수가 2보다 작은 경우에만 업데이트
-                    if(diary.getUpdateCount()<2) {
-                        updatedDiary.setUpdateCount(diary.getUpdateCount() + 1);
-                        diaryListAll.set(i, updatedDiary); // 인덱스 i 에 있는 다이어리 updatedDiary로 교체
-                        //해당 ID update count 증가
-
-                        found = true;
-                        break;
-                    }
-                    else{
-                        System.out.println("수정할 수 없습니다");
-                        return;
-                    }
+            if (diary.getId() == updatedDiary.getId() && !diary.getIsDelete()) {
+                //수정 횟수 2번으로 제한
+                if (diary.getUpdateCount() < 2) {
+                    updatedDiary.setUpdateCount(diary.getUpdateCount() + 1);
+                    diaryListAll.set(i, updatedDiary);
+                    found = true;
+                    break;
+                } else {
+                    System.out.println("수정할 수 없습니다.");
+                    return;
                 }
-
+            }
         }
 
         if (found) {
-            // 파일 초기화 후, 수정된 다이어리 리스트를 저장
-            fileHandler.saveToFile("", false); // 파일 초기화
-            saveDiaryList(diaryListAll); // 수정된 리스트 저장
+            fileHandler.saveToFile("", false);
+            saveDiaryList(diaryListAll);
         } else {
             System.out.println("ID를 찾을 수 없습니다.");
         }
     }
-    /**
-     * 모두 다 Update
-     */
-    void updateAll() {
-        List<Diary> diaryListAll = getDiaryList();
 
-
-        for (int i = 0; i < diaryListAll.size(); i++) {
-            Diary diary = diaryListAll.get(i);
-
-            diary.setUpdateCount(0);
-            diaryListAll.set(i, diary);
-            }
-
-        // 파일 초기화 후, 수정된 다이어리 리스트를 저장
-        fileHandler.saveToFile("", false); // 파일 초기화
-        saveDiaryList(diaryListAll); // 수정된 리스트 저장
-    }
-
-    /**
-     * 특정 ID의 다이어리를 삭제하는 메소드
-     */
-    void delete(final long id) {
+     void delete(final long id) {
         List<Diary> diaryListAll = getDiaryList();
         List<Diary> updatedList = new ArrayList<>();
         boolean found = false;
 
         for (Diary diary : diaryListAll) {
+            // 1. 삭제하려는  ID 가 아닐 경우
             if (diary.getId() != id) {
-                updatedList.add(diary); // 해당 ID 제외한 다이어리 리스트 생성
-            } else {
-                //삭제된 다이어리가 아닌 경우
-                if(!diary.getIsDelete()) {
+                updatedList.add(diary);
+            }
+            // 2. 삭제하려는 ID 일 경우
+            // 2-1 . 이미 삭제 되었는지 확인
+            else {
+                if (!diary.getIsDelete()) {
                     diary.setDelete(true);
                     updatedList.add(diary);
-                    found = true; // 삭제할 다이어리 발견
-                }
-                else{
+                    found = true;
+                } else {
                     System.out.println("이미 삭제된 다리어리 입니다");
-                   return;
+                    return;
                 }
             }
         }
-
+        //삭제하려는 ID를 찾았을 경우
         if (found) {
-            // 기존 파일을 초기화하고, 삭제 처리 된 다이어리 리스트 저장
-            fileHandler.saveToFile("", false); // 파일 초기화
-            saveDiaryList(updatedList); // 수정된 리스트 저장
+            fileHandler.saveToFile("", false);
+            saveDiaryList(updatedList);
         } else {
             System.out.println("ID를 찾을 수 없습니다.");
         }
     }
 
     /**
-     * 다이어리 리스트를 파일에 저장하는 메소드
+     * 다이어리 리스트 저장
+     * @param diaryList
      */
-    private void saveDiaryList(final List<Diary> diaryList) {
+     void saveDiaryList(final List<Diary> diaryList) {
         for (Diary diary : diaryList) {
             String data = diaryToString(diary);
-            fileHandler.saveToFile(data, true); // append 모드로 저장
+            fileHandler.saveToFile(data, true);
         }
     }
 
     /**
-     * 다이어리를 문자열 포맷으로 변환하는 메소드
+     * Diary 객체  String 으로 형번환
+     * @param diary
+     * @return
      */
     String diaryToString(final Diary diary) {
-
-        //StingBuilder 사용
         StringBuilder stringBuilder = new StringBuilder();
-        stringBuilder.append(diary.getId()).append("/");
-        stringBuilder.append(diary.getBody()).append("/");
-        stringBuilder.append(diary.getIsDelete()).append("/");
-        stringBuilder.append(diary.getUpdateCount());
-
-        String str = stringBuilder.toString();
-        return str;
+        stringBuilder.append(diary.getId()).append("/")
+                .append(diary.getBody()).append("/")
+                .append(diary.getIsDelete()).append("/")
+                .append(diary.getUpdateCount());
+        return stringBuilder.toString();
     }
 
     /**
-     * 다이어리 복구하는 메소드
+     * 복구하는 메서드
      * @param id
      */
-    public void restore(long id) {
+    void restore(long id) {
         List<Diary> diaryListAll = getDiaryList();
         List<Diary> updatedList = new ArrayList<>();
         boolean found = false;
 
         for (Diary diary : diaryListAll) {
+            // 1. 복구하려는 ID가 아닐 경우
             if (diary.getId() != id) {
-                updatedList.add(diary); // 해당 ID 제외한 다이어리 리스트 생성
-            } else {
-                // 삭제하지 않은 다이어리일 경우 복구 불가능하게 설정
-                if(diary.getIsDelete()) {
+                updatedList.add(diary);
+            }
+            // 2. 복구하려는 아이디일 경우
+            else {
+                // 2-1 . 삭제된 다이어리만 복구 진행
+                if (diary.getIsDelete()) {
                     diary.setDelete(false);
                     diary.setUpdateCount(0);
                     updatedList.add(diary);
                     found = true;
-                }else{
+                } else {
                     System.out.println("삭제하지 않은 다이어리 입니다");
                     return;
                 }
@@ -194,34 +168,10 @@ public class DiaryRepository {
         }
 
         if (found) {
-            // 기존 파일을 초기화하고, 복구 후 처리한 다이러리 리스트 저장
-            fileHandler.saveToFile("", false); // 파일 초기화
-            saveDiaryList(updatedList); // 수정된 리스트 저장
+            fileHandler.saveToFile("", false);
+            saveDiaryList(updatedList);
         } else {
             System.out.println("ID를 찾을 수 없습니다.");
         }
-
-
-    }
-
-    public void timer(){
-        Date now = new Date();
-        Date today = new Date(now.getYear(),now.getHours(),now.getDay()+ 1, 0, 0, 0);
-//        long delay = today.getTime()-now.getTime(); //첫 실행 시간 -> 다음날 자정
-//        long period = 86400000; //24시간
-
-        long delay = 3000; // 3분 (3분 * 60초 * 1000밀리초)
-        long period = 86400000; // 24시간 (24시간 * 60분 * 60초 * 1000밀리초)
-
-        Timer t = new Timer();
-        TimerTask task = new TimerTask() {
-            @Override
-            public void run() {
-                updateAll();
-                System.out.println("초기화되었습니다");
-            }
-        };
-        t.scheduleAtFixedRate(task, delay, period);
-
     }
 }

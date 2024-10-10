@@ -16,6 +16,13 @@ public class Diary {
         this.updateCount = updateCount;
     }
 
+    public Diary(Long id, String body){
+        this.id = id;
+        this.body=body;
+        this.isDelete=false;
+        this.updateCount = 0;
+    }
+
     public Long getId() {
         return id;
     }

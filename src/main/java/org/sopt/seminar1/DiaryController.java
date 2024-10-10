@@ -28,7 +28,6 @@ public class DiaryController {
         }
 
         final void post(final String body) {
-            // 이런 경우 아랍아가 들어올 수 도 있고, 이모지가 들어올 때 어떻게 처리할지
             // 보통 바이트 수
             if(validation(body)) {
                 diaryService.writeDiary(body);
@@ -36,15 +35,18 @@ public class DiaryController {
         }
 
         final void delete(final String id) {
-            diaryService.delete(id);
+            diaryService.deleteDiary(Long.parseLong(id));
         }
+
         final void patch(final String id, final String body) {
             if(validation(body)) {
-                diaryService.update(id, body);
+                long ID = Long.parseLong(id);
+                Diary diary = new Diary(ID, body);
+                diaryService.update(diary);
             }
         }
      void restore(final String id) {
-         diaryService.restore(id);
+         diaryService.restore(Long.parseLong(id));
 
     }
     boolean validation(final String body){

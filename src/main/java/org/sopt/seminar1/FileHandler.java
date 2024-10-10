@@ -12,6 +12,12 @@ public class FileHandler {
         this.filePath = filePath;
     }
 
+    /**
+     * 파일로 저장하는 메서드
+     * @param data
+     * @param isNew
+     * @return
+     */
     boolean saveToFile(String data, boolean isNew) {
         File file = new File(filePath);
 
@@ -35,10 +41,16 @@ public class FileHandler {
         }
     }
 
+    /**
+     * 파일로부터 읽는 메서드 -> Return List<String>
+     * @return
+     * @throws IOException
+     */
     List<String> readFromFile() throws IOException {
         List<String> lines = new ArrayList<>();
         try (BufferedReader reader = new BufferedReader(new FileReader(filePath))) {
             String line;
+            //null 이 아닐 때까지 반복
             while ((line = reader.readLine()) != null) {
                 if (!line.trim().isEmpty()) { // 빈 줄을 무시
                     lines.add(line);
@@ -48,6 +60,10 @@ public class FileHandler {
         return lines;
     }
 
+    /**
+     * 파일로 부터 읽은 String List -> 다이어리 리스트로 변환
+     * @return
+     */
     List<Diary> getDiaryList() {
         List<String> lines;
         try {
@@ -57,6 +73,7 @@ public class FileHandler {
             return new ArrayList<>();
         }
 
+        // 저장할 Diary 리스트 생성
         List<Diary> diaries = new ArrayList<>();
 
         for (String line : lines) {
@@ -72,6 +89,7 @@ public class FileHandler {
                     Diary diary = new Diary(id, body, isDeleted, updateCount);
                     diaries.add(diary);
                 } catch (NumberFormatException e) {
+                    //빈 문자열인 경우, 형식 오류
                     System.out.println("잘못된 형식의 데이터가 있습니다: " + line);
                 }
             } else {
