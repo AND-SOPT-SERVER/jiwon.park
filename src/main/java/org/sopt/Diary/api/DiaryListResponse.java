@@ -1,18 +1,17 @@
 package org.sopt.Diary.api;
 
-import org.sopt.Diary.repository.DiaryRepository;
+import org.sopt.Diary.dto.DiariesResponse;
 
 import java.util.List;
 
 public class DiaryListResponse {
-    private List<DiaryResponse> diaryList;
+    private List<DiariesResponse> diaries; // 필드 이름을 diaries로 변경
 
-    public DiaryListResponse(List<DiaryResponse> diaryList) {
-        this.diaryList = diaryList;
+    public DiaryListResponse(List<DiariesResponse> diaries) {
+        this.diaries = diaries;
     }
 
-    public List<DiaryResponse> getDiaryList() {
-        return diaryList;
+    public List<DiariesResponse> getDiaries() {
+        return diaries;
     }
 }
-
