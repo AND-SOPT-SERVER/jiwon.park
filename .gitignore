@@ -53,3 +53,5 @@ bin/
 **/src/main/java/org/sopt/practice
 
 diary.txt
+
+application.yml
