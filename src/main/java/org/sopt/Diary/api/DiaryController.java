@@ -1,5 +1,6 @@
 package org.sopt.Diary.api;
 
+import org.sopt.Diary.dto.req.DiaryUpdateRequest;
 import org.sopt.Diary.dto.res.DiariesResponse;
 import org.sopt.Diary.dto.res.DiaryListResponse;
 import org.sopt.Diary.dto.req.DiaryRequest;
@@ -65,7 +66,7 @@ public class DiaryController {
     }
 
     @PatchMapping("/diary/{id}")
-    ResponseEntity<String> updateDiary(@PathVariable Long id, @RequestBody DiaryRequest diaryRequest){
+    ResponseEntity<String> updateDiary(@PathVariable Long id, @RequestBody DiaryUpdateRequest diaryRequest){
 
         if (diaryRequest.getContent().length() > LengthLimit) {
             return ResponseEntity.badRequest().body("글자 수는 30자를 넘을 수 없습니다");
