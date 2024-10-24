@@ -2,6 +2,7 @@ package org.sopt.Diary.api;
 
 import org.sopt.Diary.dto.DiariesResponse;
 import org.sopt.Diary.dto.DiaryRequest;
+import org.sopt.Diary.repository.Category;
 import org.sopt.Diary.service.Diary;
 import org.sopt.Diary.service.DiaryService;
 import org.springframework.http.ResponseEntity;
@@ -14,14 +15,15 @@ import java.util.List;
 public class DiaryController {
 
     private final DiaryService diaryService;
+
     public DiaryController(DiaryService diaryService) {
         this.diaryService = diaryService;
     }
+
     private final static int LengthLimit = 30;
 
     @PostMapping("/diary")
     ResponseEntity<String> postDiary(@RequestBody DiaryRequest diaryRequest) {
-
         if(diaryRequest.getContent().length()>LengthLimit){
             return ResponseEntity.badRequest().body("글자 수는 30자를 넘을 수 없습니다");
         }
@@ -34,6 +36,16 @@ public class DiaryController {
         List<DiariesResponse> diaries = diaryService.getDiaryList();
         return ResponseEntity.ok(new DiaryListResponse(diaries));
     }
+    @GetMapping("/diaries/content-length")
+    public ResponseEntity<List<DiariesResponse>> getDiariesByContentLength() {
+        List<DiariesResponse> diariesResponses = diaryService.getDiaryListSortByContent();
+        return ResponseEntity.ok(diariesResponses);
+    }
+    @GetMapping("/diaries/category")
+    public ResponseEntity<List<DiariesResponse>> getDiariesByCategory(@RequestParam Category category) {
+        List<DiariesResponse> diariesResponses = diaryService.getDiaryListSortByCategory(category);
+        return ResponseEntity.ok(diariesResponses);
+    }
 
     @GetMapping("/diary/{id}")
     ResponseEntity<DiaryResponse> getDiary(@PathVariable Long id) {
@@ -43,17 +55,20 @@ public class DiaryController {
                 savedDiary.getId(),
                 savedDiary.getTitle(),
                 savedDiary.getContent(),
-                savedDiary.getDate()
+                savedDiary.getDate(),
+                savedDiary.getCategory()
         );
+
         return ResponseEntity.ok(diaryResponse);
     }
 
     @PatchMapping("/diary/{id}")
     ResponseEntity<String> updateDiary(@PathVariable Long id, @RequestBody DiaryRequest diaryRequest){
+
         if (diaryRequest.getContent().length() > LengthLimit) {
             return ResponseEntity.badRequest().body("글자 수는 30자를 넘을 수 없습니다");
         }
-        diaryService.patchDiary(id,diaryRequest.getContent());
+        diaryService.patchDiary(id,diaryRequest.getContent(),diaryRequest.getCategory());
         return ResponseEntity.ok("일기가 수정되었습니다.");
     }
 

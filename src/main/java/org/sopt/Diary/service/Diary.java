@@ -1,5 +1,7 @@
 package org.sopt.Diary.service;
 
+import org.sopt.Diary.repository.Category;
+
 import java.time.LocalDateTime;
 
 public class Diary {
@@ -7,19 +9,22 @@ public class Diary {
     private  String title;
     private  String content;
     private String date;
+    private Category category;
 
-    public Diary(long id, String title, String content, String date){
+    public Diary(long id, String title, String content, String date,Category category){
         this.id = id;
         this.title = title;
         this.content = content;
         this.date= date;
+        this.category = category;
     }
 
 
-    public Diary(String title, String content, LocalDateTime now){
+    public Diary(String title, String content, LocalDateTime now,Category category){
         this.id = null;
         this.title = title;
         this.content = content;
+        this.category = category;
     }
     public Diary(long id, String content){
         this.id= id;
@@ -42,5 +47,8 @@ public class Diary {
 
     public String getDate() {
         return date;
+    }
+    public Category getCategory(){
+        return category;
     }
 }

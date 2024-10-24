@@ -23,22 +23,27 @@ public class DiaryEntity {
     @Column(columnDefinition = "boolean default false")
     private Boolean delYn = false;
 
+    @Enumerated(value = EnumType.STRING)
+    private Category category;
+
     // 생성자
-    public DiaryEntity(final Long id, final String title, final String content, final LocalDateTime date) {
+    public DiaryEntity(final Long id, final String title, final String content, final LocalDateTime date, final Category category) {
         this. id = id;
         this.title  = title;
         this.content = content;
         this.date = date;
         this.delYn = false;
+        this.category = category;
     }
 
     public DiaryEntity() {
 
     }
 
-    public DiaryEntity(String title, String content) {
+    public DiaryEntity(String title, String content,Category category) {
         this.title = title;
         this.content = content;
+        this.category = category;
 
     }
 
@@ -58,6 +63,10 @@ public class DiaryEntity {
 
     public Boolean getDelYn() {
         return delYn;
+    }
+
+    public Category getCategory(){
+        return category;
     }
 
     // 삭제 처리 메서드
