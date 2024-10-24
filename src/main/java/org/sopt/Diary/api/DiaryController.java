@@ -35,18 +35,23 @@ public class DiaryController {
     }
 
     @GetMapping("/diaries")
-    public ResponseEntity<DiaryListResponse> getDiaries() {
-        List<DiariesResponse> diaries = diaryService.getDiaryList();
-        return ResponseEntity.ok(new DiaryListResponse(diaries));
-    }
-    @GetMapping("/diaries/content-length")
-    public ResponseEntity<List<DiariesResponse>> getDiariesByContentLength() {
-        List<DiariesResponse> diariesResponses = diaryService.getDiaryListSortByContent();
-        return ResponseEntity.ok(diariesResponses);
-    }
-    @GetMapping("/diaries/category")
-    public ResponseEntity<List<DiariesResponse>> getDiariesByCategory(@RequestParam Category category) {
-        List<DiariesResponse> diariesResponses = diaryService.getDiaryListSortByCategory(category);
+    public ResponseEntity<List<DiariesResponse>> getDiaries(
+            @RequestParam(required = false) Category category,
+            @RequestParam(required = false, defaultValue = "false") boolean sortByContentLength) {
+
+        List<DiariesResponse> diariesResponses;
+
+        if (category != null) {
+            // 카테고리로 정렬
+            diariesResponses = diaryService.getDiaryListSortByCategory(category);
+        } else if (sortByContentLength) {
+            // 글자수로 정렬
+            diariesResponses = diaryService.getDiaryListSortByContent();
+        } else {
+            //최신순으로 정렬
+            diariesResponses = diaryService.getDiaryList();
+        }
+
         return ResponseEntity.ok(diariesResponses);
     }
 

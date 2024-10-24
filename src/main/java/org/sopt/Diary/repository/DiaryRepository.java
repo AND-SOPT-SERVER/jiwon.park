@@ -21,7 +21,7 @@ public interface DiaryRepository extends JpaRepository<DiaryEntity,Long> {
     boolean existsByTitle(String title);
 
     @Query("SELECT d FROM DiaryEntity d WHERE d.delYn = false ORDER BY LENGTH(d.content) DESC")
-    List<DiaryEntity> findTopByContentLengthAndDelYnFalse();
+    List<DiaryEntity> findByContentLengthAndDelYnFalse();
 
     List<DiaryEntity> findByCategoryAndDelYnFalse(Category category);
 }
