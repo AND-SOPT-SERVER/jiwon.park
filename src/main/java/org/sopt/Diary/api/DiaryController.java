@@ -1,7 +1,9 @@
 package org.sopt.Diary.api;
 
-import org.sopt.Diary.dto.DiariesResponse;
-import org.sopt.Diary.dto.DiaryRequest;
+import org.sopt.Diary.dto.res.DiariesResponse;
+import org.sopt.Diary.dto.res.DiaryListResponse;
+import org.sopt.Diary.dto.req.DiaryRequest;
+import org.sopt.Diary.dto.res.DiaryResponse;
 import org.sopt.Diary.repository.Category;
 import org.sopt.Diary.service.Diary;
 import org.sopt.Diary.service.DiaryService;

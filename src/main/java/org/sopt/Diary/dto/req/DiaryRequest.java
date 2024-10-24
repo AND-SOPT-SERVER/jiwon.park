@@ -1,4 +1,4 @@
-package org.sopt.Diary.dto;
+package org.sopt.Diary.dto.req;
 
 
 import org.sopt.Diary.repository.Category;

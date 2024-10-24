@@ -1,6 +1,4 @@
-package org.sopt.Diary.dto;
-
-import org.sopt.Diary.repository.Category;
+package org.sopt.Diary.dto.res;
 
 public class DiariesResponse {
 

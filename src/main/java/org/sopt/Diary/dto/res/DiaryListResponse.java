@@ -1,6 +1,4 @@
-package org.sopt.Diary.api;
-
-import org.sopt.Diary.dto.DiariesResponse;
+package org.sopt.Diary.dto.res;
 
 import java.util.List;
 

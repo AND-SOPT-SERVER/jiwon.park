@@ -26,7 +26,6 @@ public class DiaryEntity {
     @Enumerated(value = EnumType.STRING)
     private Category category;
 
-    // 생성자
     public DiaryEntity(final Long id, final String title, final String content, final LocalDateTime date, final Category category) {
         this. id = id;
         this.title  = title;
