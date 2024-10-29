@@ -18,8 +18,8 @@ import java.util.List;
 @Component
 public class DiaryService {
 
-    private final static int limitM = 5;
-    private final static int limitDiary = 10;
+    private final static int LIMIT_MINUTE = 5;
+    private final static int LIMIT_DIARY = 10;
     private final DiaryRepository diaryRepository;
 
     public DiaryService(DiaryRepository diaryRepository) {
@@ -32,100 +32,78 @@ public class DiaryService {
         }
     }
 
-    public void createDiary(DiaryRequest diaryRequest){
+    public void createDiary(DiaryRequest diaryRequest) {
+        validateTitle(diaryRequest.title());
 
-        validateTitle(diaryRequest.getTitle());
-
-        //Repo에서 가장 최신의 다이어리 찾아와서 현재 시간과의 차이를 구함
-        DiaryEntity latestDiary = diaryRepository.findTop1ByDelYnFalseOrderByDateDesc();
-        if(latestDiary!=null){
-            LocalDateTime now = LocalDateTime.now();
-            LocalDateTime latest = latestDiary.getDate();
-            Duration duration = Duration.between(now, latest);
-            int between = duration.toMinutesPart();
-            if( between<limitM){
-                throw new ResponseStatusException(HttpStatus.TOO_MANY_REQUESTS,"5분 뒤에 요청해주세요");
-            }
+        int minutesSinceLastDiary = calculateMinutesSinceLastDiary();
+        if (minutesSinceLastDiary < LIMIT_MINUTE) {
+            throw new ResponseStatusException(HttpStatus.TOO_MANY_REQUESTS, "5분 뒤에 요청해주세요");
         }
 
-        Diary diary = new Diary(diaryRequest.getTitle(),diaryRequest.getContent(), LocalDateTime.now(),diaryRequest.getCategory());
-        diaryRepository.save(new DiaryEntity(diary.getTitle(),diary.getContent(),diary.getCategory()));
+        Diary diary = new Diary(diaryRequest.title(), diaryRequest.content(), diaryRequest.category());
+        diaryRepository.save(new DiaryEntity(diary.getTitle(), diary.getContent(), diary.getCategory()));
     }
 
+    private int calculateMinutesSinceLastDiary() {
+        DiaryEntity latestDiary = diaryRepository.findTop1ByOrderByCreatedAtDesc();
 
-    public List<DiariesResponse> getDiaryList(){
+        if (latestDiary != null) {
+            LocalDateTime now = LocalDateTime.now();
+            LocalDateTime latest = latestDiary.getCreatedAt();
+            Duration duration = Duration.between(latest, now);
+            return duration.toMinutesPart();
+        }
+        return Integer.MAX_VALUE;  // 다이어리가 없을 경우, 제한 시간이 없도록 큰 값 반환
+    }
 
-        List<DiaryEntity> diaryEntityList = diaryRepository.findTop10ByDelYnFalseOrderByDateDesc();
+    private List<DiariesResponse> toDiariesResponse(List<DiaryEntity> diaryEntities) {
         List<DiariesResponse> diariesResponses = new ArrayList<>();
+        int count = 0;
 
-
-        for(DiaryEntity diary : diaryEntityList){
+        for (DiaryEntity diary : diaryEntities) {
+            if (count >= LIMIT_DIARY) break;
             DiariesResponse diariesResponse = new DiariesResponse(diary.getId(), diary.getTitle());
             diariesResponses.add(diariesResponse);
+            count++;
         }
         return diariesResponses;
+    }
+
+    public List<DiariesResponse> getDiaryList() {
+        List<DiaryEntity> diaryEntities = diaryRepository.findTop10ByOrderByCreatedAtDesc();
+        return toDiariesResponse(diaryEntities);
     }
 
     public List<DiariesResponse> getDiaryListSortByContent() {
-        List<DiaryEntity> diaryEntityList = diaryRepository.findByContentLengthAndDelYnFalse();
-        List<DiariesResponse> diariesResponses = new ArrayList<>();
-        int count = 0;
-
-        for (DiaryEntity diary : diaryEntityList) {
-            if (count >= limitDiary) {
-                break;
-            }
-            DiariesResponse diariesResponse = new DiariesResponse(diary.getId(), diary.getTitle());
-            diariesResponses.add(diariesResponse);
-            count++;
-        }
-
-        return diariesResponses;
+        List<DiaryEntity> diaryEntities = diaryRepository.findByContentLength();
+        return toDiariesResponse(diaryEntities);
     }
 
     public List<DiariesResponse> getDiaryListSortByCategory(Category category) {
-        List<DiaryEntity> diaryEntityList = diaryRepository.findByCategoryAndDelYnFalse(category);
-        List<DiariesResponse> diariesResponses = new ArrayList<>();
-        int count = 0;
-
-        for (DiaryEntity diary : diaryEntityList) {
-            if (count >= limitDiary) {
-                break;
-            }
-            DiariesResponse diariesResponse = new DiariesResponse(diary.getId(), diary.getTitle());
-            diariesResponses.add(diariesResponse);
-            count++;
-        }
-
-        return diariesResponses;
+        List<DiaryEntity> diaryEntities = diaryRepository.findByCategory(category);
+        return toDiariesResponse(diaryEntities);
     }
 
     public Diary getDiary(Long id) {
-        DiaryEntity diaryEntity= findById(id);
+        DiaryEntity diaryEntity = findById(id);
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
-        String formattedDate = diaryEntity.getDate().format(formatter);
+        String formattedDate = diaryEntity.getCreatedAt().format(formatter);
 
         return new Diary(diaryEntity.getId(), diaryEntity.getTitle(), diaryEntity.getContent(), formattedDate, diaryEntity.getCategory());
     }
 
     public void patchDiary(Long id, String content, Category category) {
         DiaryEntity diaryEntity= findById(id);
-        diaryRepository.save(new DiaryEntity(diaryEntity.getId(), diaryEntity.getTitle(), content, diaryEntity.getDate(), category));
+        diaryRepository.save(new DiaryEntity(diaryEntity.getId(), diaryEntity.getTitle(), content, diaryEntity.getCreatedAt(), category));
     }
 
     public void deleteDiary(Long id) {
         DiaryEntity diaryEntity= findById(id);
-        diaryEntity.delete();
-        diaryRepository.save(diaryEntity);
+        diaryRepository.delete(diaryEntity);
     }
 
     public DiaryEntity findById(Long id){
-        DiaryEntity diaryEntity = diaryRepository.findById(id)
+        return diaryRepository.findById(id)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
-
-        if (diaryEntity.getDelYn()) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND);
-        }
-        return diaryEntity;
     }
 }

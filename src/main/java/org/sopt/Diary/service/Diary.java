@@ -2,35 +2,32 @@ package org.sopt.Diary.service;
 
 import org.sopt.Diary.repository.Category;
 
-import java.time.LocalDateTime;
-
 public class Diary {
-    private  final Long id; //final 추가해서 불변하게 구현
-    private  String title;
-    private  String content;
-    private String date;
-    private Category category;
+    private  long id;
+    private  final String title;
+    private  final String content;
+    private  String createdAt;
+    private  Category category;
 
     public Diary(long id, String title, String content, String date,Category category){
         this.id = id;
         this.title = title;
         this.content = content;
-        this.date= date;
+        this.createdAt= date;
         this.category = category;
     }
 
 
-    public Diary(String title, String content, LocalDateTime now,Category category){
-        this.id = null;
+    public Diary(String title, String content,Category category){
         this.title = title;
         this.content = content;
         this.category = category;
     }
+
     public Diary(long id, String content){
         this.id= id;
         this.title = null;
         this.content = content;
-
     }
 
     public long getId(){
@@ -45,9 +42,10 @@ public class Diary {
         return content;
     }
 
-    public String getDate() {
-        return date;
+    public String getCreatedAt() {
+        return createdAt;
     }
+
     public Category getCategory(){
         return category;
     }

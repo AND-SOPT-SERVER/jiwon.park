@@ -12,16 +12,14 @@ import java.util.List;
 public interface DiaryRepository extends JpaRepository<DiaryEntity,Long> {
 
 
-    List<DiaryEntity> findTop10ByDelYnFalseOrderByDateDesc();
+    List<DiaryEntity> findTop10ByOrderByCreatedAtDesc();
 
-    DiaryEntity findByIdAndDelYnFalse(Long id);
+    DiaryEntity findTop1ByOrderByCreatedAtDesc();
 
-    DiaryEntity findTop1ByDelYnFalseOrderByDateDesc();
+    Boolean existsByTitle(String title);
 
-    boolean existsByTitle(String title);
+    @Query("SELECT d FROM DiaryEntity d ORDER BY LENGTH(d.content) DESC")
+    List<DiaryEntity> findByContentLength();
 
-    @Query("SELECT d FROM DiaryEntity d WHERE d.delYn = false ORDER BY LENGTH(d.content) DESC")
-    List<DiaryEntity> findByContentLengthAndDelYnFalse();
-
-    List<DiaryEntity> findByCategoryAndDelYnFalse(Category category);
+    List<DiaryEntity> findByCategory(Category category);
 }
