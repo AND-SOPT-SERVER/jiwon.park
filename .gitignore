@@ -54,4 +54,5 @@ bin/
 
 diary.txt
 
-application.yml
+*.yml
+.yml
