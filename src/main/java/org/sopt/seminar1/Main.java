@@ -5,9 +5,9 @@ public class Main {
 
     public static void main(String[] args) {
         final UI ui;
-        final  DiaryService diaryService = new DiaryService();
+        final  DiaryTimer diaryTimer =new DiaryTimer();
         try {
-            diaryService.timer();
+            diaryTimer.timer();
             ui = new DiaryUI(new DiaryController());
             ui.runRepeatedly();
         } catch (Throwable t) {
