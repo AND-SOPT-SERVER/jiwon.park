@@ -3,7 +3,7 @@ package org.sopt.Diary.service;
 import org.sopt.Diary.dto.res.DiariesResponse;
 import org.sopt.Diary.dto.req.DiaryRequest;
 import org.sopt.Diary.repository.Category;
-import org.sopt.Diary.repository.DiaryEntity;
+import org.sopt.Diary.entity.DiaryEntity;
 import org.sopt.Diary.repository.DiaryRepository;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;

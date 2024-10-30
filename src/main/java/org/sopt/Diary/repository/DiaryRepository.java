@@ -1,7 +1,6 @@
 package org.sopt.Diary.repository;
 
-import org.sopt.Diary.service.Diary;
-import org.springframework.data.domain.Sort;
+import org.sopt.Diary.entity.DiaryEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Component;
