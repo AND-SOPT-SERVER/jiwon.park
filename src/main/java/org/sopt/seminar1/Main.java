@@ -1,15 +1,21 @@
 package org.sopt.seminar1;
 
+import org.sopt.seminar1.controller.DiaryController;
+import org.sopt.seminar1.util.DiaryTimer;
+
 import java.io.*;
+
 public class Main {
 
     public static void main(String[] args) {
         final UI ui;
-        final  DiaryService diaryService = new DiaryService();
+        final DiaryTimer diaryTimer =new DiaryTimer();
+        final DiaryController diaryController = new DiaryController();
         try {
-            diaryService.timer();
+            diaryTimer.timer();
             ui = new DiaryUI(new DiaryController());
             ui.runRepeatedly();
+            diaryController.saveChanges();
         } catch (Throwable t) {
 
         }
@@ -100,6 +106,7 @@ public class Main {
                             server.restore(inputId);
                         }
                         case "FINISH" -> {
+
                             server.finish();
                         }
                         default -> {

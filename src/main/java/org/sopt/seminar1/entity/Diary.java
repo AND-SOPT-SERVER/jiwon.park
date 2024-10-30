@@ -1,4 +1,4 @@
-package org.sopt.seminar1;
+package org.sopt.seminar1.entity;
 
 public class Diary {
 
@@ -6,21 +6,20 @@ public class Diary {
 
     private final String body;
 
-    private boolean isDelete;
-    private  int updateCount;
+    private boolean isDeleted = false;
 
-    public Diary(Long id, String body,boolean isDelete,int updateCount){
+    private  int updateCount =0;
+
+    public Diary(Long id, String body,boolean isDeleted,int updateCount){
         this.id = id;
         this.body=body;
-        this.isDelete=isDelete;
+        this.isDeleted=isDeleted;
         this.updateCount = updateCount;
     }
 
     public Diary(Long id, String body){
         this.id = id;
         this.body=body;
-        this.isDelete=false;
-        this.updateCount = 0;
     }
 
     public Long getId() {
@@ -31,15 +30,15 @@ public class Diary {
         return body;
     }
 
-    public boolean getIsDelete(){return isDelete;}
+    public boolean getIsDeleted(){return isDeleted;}
 
     public int getUpdateCount(){return  updateCount;}
 
-    void setDelete(boolean isDel) {
-        this.isDelete = isDel;
+    public void setDelete(boolean isDeleted) {
+        this.isDeleted = isDeleted;
     }
 
-    void setId(long id){
+    public void setId(long id){
         this.id = id;
     }
 
