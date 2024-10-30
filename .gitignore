@@ -56,3 +56,6 @@ src/main/java/org/sopt/seminar1/diary.txt
 
 *.yml
 .yml
+
+**/diary.txt
+diary.txt
