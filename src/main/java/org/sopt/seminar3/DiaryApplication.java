@@ -1,4 +1,4 @@
-package org.sopt.week3;
+package org.sopt.seminar3;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;

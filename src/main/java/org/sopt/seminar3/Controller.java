@@ -1,4 +1,4 @@
-package org.sopt.week3;
+package org.sopt.seminar3;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
