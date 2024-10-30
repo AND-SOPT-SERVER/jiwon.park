@@ -1,4 +1,9 @@
-package org.sopt.seminar1;
+package org.sopt.seminar1.controller;
+
+import org.sopt.seminar1.entity.Diary;
+import org.sopt.seminar1.service.DiaryService;
+import org.sopt.seminar1.repository.DiaryRepository;
+import org.sopt.seminar1.validator.DiaryValidator;
 
 import java.util.List;
 
@@ -7,37 +12,42 @@ public class DiaryController {
     private Status status = Status.READY;
     private final DiaryService diaryService = new DiaryService();
     private  final DiaryValidator diaryValidator =new DiaryValidator();
+    private final DiaryRepository diaryRepository = new DiaryRepository();
 
-
-    public Status getStatus() {
+    public final Status getStatus() {
         return status;
     }
 
-    void boot() {
+    public final void boot() {
         this.status = Status.RUNNING;
     }
 
-    void finish() {
+    public final void finish() {
         this.status = Status.FINISHED;
+         saveChanges();
+    }
+
+    public final void saveChanges(){
+        diaryRepository.saveChangesToFile();
     }
 
     // APIS
-    final List<Diary> getList() {
+    public final List<Diary> getList() {
         return diaryService.getDiaryList();
     }
 
-    final void post(final String body) {
+    public final void post(final String body) {
         // 보통 바이트 수
         if(diaryValidator.validation(body)) {
             diaryService.writeDiary(body);
         }
     }
 
-    final void delete(final String id) {
+    public final void delete(final String id) {
         diaryService.deleteDiary(Long.parseLong(id));
     }
 
-    final void patch(final String id, final String body) {
+    public final void patch(final String id, final String body) {
         if (diaryValidator.validation(body)) {
             long ID = Long.parseLong(id);
             Diary diary = new Diary(ID, body);
@@ -45,7 +55,7 @@ public class DiaryController {
         }
     }
 
-    void restore(final String id) {
+    public final void restore(final String id) {
          diaryService.restore(Long.parseLong(id));
 
     }

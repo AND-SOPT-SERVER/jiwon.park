@@ -1,5 +1,6 @@
-package org.sopt.seminar1;
+package org.sopt.seminar1.util;
 
+import org.sopt.seminar1.entity.Diary;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
@@ -11,7 +12,7 @@ public class DiaryFormatter {
     private static final int LENGTH =4;
 
     //Diary 객체를 String 형식으로 변환
-    String diaryToString(final Diary diary) {
+    public String diaryToString(final Diary diary) {
         return diary.getId() + "/" +
                 diary.getBody() + "/" +
                 diary.getIsDeleted() + "/" +

@@ -1,4 +1,4 @@
-package org.sopt.seminar1;
+package org.sopt.seminar1.util;
 
 import java.io.*;
 import java.util.ArrayList;
@@ -8,7 +8,7 @@ public class FileHandler {
 
     private final String filePath;
 
-    FileHandler(final String filePath) {
+    public FileHandler(final String filePath) {
         this.filePath = filePath;
     }
 

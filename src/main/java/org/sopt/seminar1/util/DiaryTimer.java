@@ -1,5 +1,6 @@
-package org.sopt.seminar1;
+package org.sopt.seminar1.util;
 
+import org.sopt.seminar1.service.DiaryService;
 import org.springframework.stereotype.Component;
 
 import java.util.Calendar;
@@ -13,7 +14,7 @@ public class DiaryTimer {
     private final static long PERIOD_TIME = 86400000; //24 시간
     private final DiaryService diaryService = new DiaryService();
 
-    void timer(){
+    public void timer(){
         Calendar calendar = Calendar.getInstance();
         calendar.set(Calendar.HOUR_OF_DAY, 0);
         calendar.set(Calendar.MINUTE, 0);

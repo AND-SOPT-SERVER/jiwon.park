@@ -1,4 +1,4 @@
-package org.sopt.seminar1;
+package org.sopt.seminar1.entity;
 
 public class Diary {
 
@@ -30,15 +30,15 @@ public class Diary {
         return body;
     }
 
-    boolean getIsDeleted(){return isDeleted;}
+    public boolean getIsDeleted(){return isDeleted;}
 
-    int getUpdateCount(){return  updateCount;}
+    public int getUpdateCount(){return  updateCount;}
 
-    void setDelete(boolean isDeleted) {
+    public void setDelete(boolean isDeleted) {
         this.isDeleted = isDeleted;
     }
 
-    void setId(long id){
+    public void setId(long id){
         this.id = id;
     }
 

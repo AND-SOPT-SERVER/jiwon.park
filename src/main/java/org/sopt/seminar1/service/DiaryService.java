@@ -1,4 +1,7 @@
-package org.sopt.seminar1;
+package org.sopt.seminar1.service;
+
+import org.sopt.seminar1.entity.Diary;
+import org.sopt.seminar1.repository.DiaryRepository;
 
 import java.util.*;
 
@@ -6,7 +9,7 @@ public class DiaryService {
 
     private final DiaryRepository diaryRepository= new DiaryRepository();
 
-    void writeDiary(final String body) {
+    public void writeDiary(final String body) {
         final Diary diary = new Diary(0L, body, false, 0);
         boolean success = diaryRepository.save(diary);
         if (!success) {
@@ -15,24 +18,24 @@ public class DiaryService {
 
     }
 
-    List<Diary> getDiaryList(){
+    public List<Diary> getDiaryList(){
         return diaryRepository.findAll();
     }
 
-     void deleteDiary(final long id) {
+    public void deleteDiary(final long id) {
         diaryRepository.delete(id);
     }
 
-     void update(final Diary updatedDiary) {
+    public void update(final Diary updatedDiary) {
         diaryRepository.update(updatedDiary);
     }
 
-     void restore(final long id) {
+    public void restore(final long id) {
         diaryRepository.restore(id);
     }
 
 
-    void updateAllDiaries() {
+    public void updateAllDiaries() {
         List<Diary> diaryListAll = diaryRepository.getDiaryList();
         for (Diary diary : diaryListAll) {
             diary.setUpdateCount(0); // 모든 업데이트 카운트 초기화

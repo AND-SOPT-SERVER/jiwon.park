@@ -52,10 +52,11 @@ bin/
 
 **/src/main/java/org/sopt/practice
 
-src/main/java/org/sopt/seminar1/diary.txt
 
 *.yml
 .yml
 
-**/diary.txt
 diary.txt
+/diary.txt
+**/diary.txt
+/Users/macbook/Desktop/SOPT/Server/homework/seminar/diary.txt
