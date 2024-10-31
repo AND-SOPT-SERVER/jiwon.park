@@ -1,11 +1,11 @@
-package org.sopt.Diary.api;
+package org.sopt.Diary.controller;
 
-import org.sopt.Diary.dto.req.DiaryUpdateRequest;
+import org.sopt.Diary.dto.req.DiaryUpdateReq;
 import org.sopt.Diary.dto.res.DiariesResponse;
-import org.sopt.Diary.dto.req.DiaryRequest;
+import org.sopt.Diary.dto.req.DiaryReq;
 import org.sopt.Diary.dto.res.DiaryResponse;
-import org.sopt.Diary.repository.Category;
-import org.sopt.Diary.service.Diary;
+import org.sopt.Diary.entity.Category;
+import org.sopt.Diary.dto.Diary;
 import org.sopt.Diary.service.DiaryService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -25,7 +25,7 @@ public class DiaryController {
     private final static int LENGTH_LIMIT = 30;
 
     @PostMapping("/diary")
-    ResponseEntity<String> postDiary(@RequestBody final DiaryRequest  diaryRequest) {
+    ResponseEntity<String> postDiary(@RequestBody final DiaryReq diaryRequest) {
         //final 을 붙여서 매개변수의 재할당을 막음!!
 
         if(diaryRequest.content().length()>LENGTH_LIMIT){
@@ -76,7 +76,7 @@ public class DiaryController {
     }
 
     @PatchMapping("/diary/{id}")
-    ResponseEntity<String> updateDiary(@PathVariable(name = "id") final Long id, @RequestBody DiaryUpdateRequest diaryRequest){
+    ResponseEntity<String> updateDiary(@PathVariable(name = "id") final Long id, @RequestBody DiaryUpdateReq diaryRequest){
 
         if (diaryRequest.content().length() > LENGTH_LIMIT) {
             return ResponseEntity.badRequest().body("글자 수는 30자를 넘을 수 없습니다");

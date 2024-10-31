@@ -1,5 +1,6 @@
 package org.sopt.Diary.repository;
 
+import org.sopt.Diary.entity.Category;
 import org.sopt.Diary.entity.DiaryEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;

@@ -1,6 +1,6 @@
-package org.sopt.Diary.service;
+package org.sopt.Diary.dto;
 
-import org.sopt.Diary.repository.Category;
+import org.sopt.Diary.entity.Category;
 
 public class Diary {
     private  long id;

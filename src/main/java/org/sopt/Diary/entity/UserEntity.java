@@ -1,6 +1,7 @@
 package org.sopt.Diary.entity;
 
 import jakarta.persistence.*;
+import org.sopt.Diary.dto.UserDTO;
 
 @Entity
 @Table(name="user")
@@ -8,7 +9,7 @@ public class UserEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private long id;
 
     @Column(name="login_id")
     private String loginId;
@@ -21,5 +22,21 @@ public class UserEntity {
 
     //기본 생성자
     public UserEntity(){};
+
+    public UserEntity(final String loginId,final String password, final String nickname){
+        this.loginId =loginId;
+        this.password=password;
+        this.nickname=nickname;
+    }
+
+    public static UserEntity createUser(final String loginId,final String password, final String nickname){
+        return new UserEntity(loginId, password, nickname);
+    }
+
+    public long getId(){
+        return this.id;
+    }
+
+
 
 }
