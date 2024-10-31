@@ -1,7 +1,7 @@
 package org.sopt.Diary.service;
 
 import org.sopt.Diary.dto.req.DiaryReq;
-import org.sopt.Diary.dto.res.DiaryResponse;
+import org.sopt.Diary.dto.res.DiaryRes;
 import org.sopt.Diary.entity.Category;
 import org.sopt.Diary.entity.DiaryEntity;
 import org.sopt.Diary.repository.DiaryRepository;
@@ -10,21 +10,16 @@ import org.springframework.stereotype.Component;
 
 import org.springframework.web.server.ResponseStatusException;
 
-import java.time.Duration;
-import java.time.LocalDateTime;
 
 
 @Component
 public class DiaryService {
 
-    private final static int LIMIT_MINUTE = 5;
 
     private final DiaryRepository diaryRepository;
 
-
     public DiaryService(DiaryRepository diaryRepository) {
         this.diaryRepository = diaryRepository;
-
     }
 
     final public void createDiary(final long userId, final DiaryReq diaryRequest) {
@@ -39,11 +34,11 @@ public class DiaryService {
         );
     }
 
-    public DiaryResponse getDiary(final long id) {
+    public DiaryRes getDiary(final long id) {
 
         DiaryEntity diaryEntity = findByDiaryIdPrivateFalse(id);
 
-        return new DiaryResponse(diaryEntity.getDiaryId(),
+        return new DiaryRes(diaryEntity.getDiaryId(),
                 diaryEntity.getTitle(),
                 diaryEntity.getContent(),
                 diaryEntity.getContent(),

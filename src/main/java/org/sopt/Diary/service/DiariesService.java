@@ -1,8 +1,8 @@
 package org.sopt.Diary.service;
 
 import org.sopt.Diary.Formatter.DiaryFormatter;
-import org.sopt.Diary.dto.res.DiariesResponse;
-import org.sopt.Diary.dto.res.DiaryListResponse;
+import org.sopt.Diary.dto.res.DiariesRes;
+import org.sopt.Diary.dto.res.DiaryListRes;
 import org.sopt.Diary.entity.Category;
 import org.sopt.Diary.entity.DiaryEntity;
 import org.sopt.Diary.entity.SortType;
@@ -27,22 +27,22 @@ public class DiariesService {
         this.userService = userService;
     }
 
-    private List<DiariesResponse> getDiaryResponse(List<DiaryEntity> diaryEntities) {
-        List<DiariesResponse> diariesResponses = new ArrayList<>();
+    private List<DiariesRes> getDiaryResponse(List<DiaryEntity> diaryEntities) {
+        List<DiariesRes> diariesRespons = new ArrayList<>();
         int count =0;
         for (DiaryEntity diary : diaryEntities) {
             if(count < LIMIT_DIARY) {
                 final UserEntity user = userService.findByUserId(diary.getUserId());
                 final String createdAt = DiaryFormatter.dateFormatter(diary.getCreatedAt());
-                DiariesResponse diariesResponse = new DiariesResponse(diary.getDiaryId(), user.getNickname(), diary.getTitle(), createdAt);
-                diariesResponses.add(diariesResponse);
+                DiariesRes diariesRes = new DiariesRes(diary.getDiaryId(), user.getNickname(), diary.getTitle(), createdAt);
+                diariesRespons.add(diariesRes);
                 count++;
             }
         }
-        return diariesResponses;
+        return diariesRespons;
     }
 
-    public List<DiariesResponse> getDiaryList(Category category, SortType sortType) {
+    public List<DiariesRes> getDiaryList(Category category, SortType sortType) {
         List<DiaryEntity> diaryEntities;
 
         if (category == Category.all) {
@@ -63,7 +63,7 @@ public class DiariesService {
         return getDiaryResponse(diaryEntities);
     }
 
-    public List<DiariesResponse> getMyDiaryList(long userId, Category category, SortType sortType) {
+    public List<DiariesRes> getMyDiaryList(long userId, Category category, SortType sortType) {
         List<DiaryEntity> diaryEntities;
 
         if (category == Category.all) {
@@ -86,8 +86,8 @@ public class DiariesService {
         return getDiaryResponse(diaryEntities);
     }
 
-    public DiaryListResponse getDiariesResponse(Category category, SortType sortType, boolean isMine, long userId) {
-        List<DiariesResponse> diaryResponses;
+    public DiaryListRes getDiariesResponse(Category category, SortType sortType, boolean isMine, long userId) {
+        List<DiariesRes> diaryResponses;
 
         if (isMine) {
             diaryResponses = getMyDiaryList(userId, category, sortType);
@@ -95,11 +95,8 @@ public class DiariesService {
             diaryResponses = getDiaryList(category, sortType);
         }
 
-        return new DiaryListResponse(diaryResponses);
+        return new DiaryListRes(diaryResponses);
     }
-
-
-
 
 }
 

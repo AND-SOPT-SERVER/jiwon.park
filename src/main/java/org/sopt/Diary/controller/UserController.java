@@ -3,7 +3,7 @@ package org.sopt.Diary.controller;
 import jakarta.validation.Valid;
 import org.sopt.Diary.dto.req.SignInReq;
 import org.sopt.Diary.dto.req.SignUpReq;
-import org.sopt.Diary.dto.res.UserResponse;
+import org.sopt.Diary.dto.res.UserRes;
 import org.sopt.Diary.service.UserService;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -26,9 +26,9 @@ public class UserController {
     }
 
     @PostMapping("/signin")
-    private UserResponse signIn(@Valid @RequestBody SignInReq signInReq){
+    private UserRes signIn(@Valid @RequestBody SignInReq signInReq){
         Long userId= userService.login(signInReq);
-        return new UserResponse(userId);
+        return new UserRes(userId);
 
     }
 

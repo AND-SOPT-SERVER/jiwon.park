@@ -3,7 +3,7 @@ package org.sopt.Diary.controller;
 import jakarta.validation.Valid;
 import org.sopt.Diary.dto.req.DiaryUpdateReq;
 import org.sopt.Diary.dto.req.DiaryReq;
-import org.sopt.Diary.dto.res.DiaryResponse;
+import org.sopt.Diary.dto.res.DiaryRes;
 import org.sopt.Diary.service.DiaryService;
 import org.sopt.Diary.service.UserService;
 import org.sopt.Diary.validator.DiaryValidator;
@@ -45,9 +45,9 @@ public class DiaryController {
      * @return 200
      */
     @GetMapping("/{diaryId}")
-    ResponseEntity<DiaryResponse> getDiary( @PathVariable("diaryId") final long diaryId) {
-        final DiaryResponse diaryResponse = diaryService.getDiary(diaryId);
-        return ResponseEntity.ok(diaryResponse);
+    ResponseEntity<DiaryRes> getDiary(@PathVariable("diaryId") final long diaryId) {
+        final DiaryRes diaryRes = diaryService.getDiary(diaryId);
+        return ResponseEntity.ok(diaryRes);
     }
 
     @PatchMapping("/{diaryId}")

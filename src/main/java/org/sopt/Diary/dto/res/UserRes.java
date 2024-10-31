@@ -1,10 +1,10 @@
 package org.sopt.Diary.dto.res;
 
-public class UserResponse {
+public class UserRes {
 
     private long userId;
 
-    public UserResponse(long userId){
+    public UserRes(long userId){
         this.userId = userId;
     }
 
