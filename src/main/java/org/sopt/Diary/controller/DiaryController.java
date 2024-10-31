@@ -26,8 +26,14 @@ public class DiaryController {
 
     private final static int LENGTH_LIMIT = 30;
 
+    /**
+     * 일기 작성하기
+     * @param userId 유저 Id(Header)
+     * @param diaryRequest title,content,category,isPrivate
+     * @return 200
+     */
     @PostMapping()
-    ResponseEntity<String> postDiary(@RequestHeader("userId") Long userId, @Valid @RequestBody final DiaryReq diaryRequest) {
+    ResponseEntity<String> postDiary(@RequestHeader("userId") long userId, @Valid @RequestBody final DiaryReq diaryRequest) {
 
         if(diaryRequest.content().length()>LENGTH_LIMIT){
             return ResponseEntity.badRequest().body("글자 수는 30자를 넘을 수 없습니다");
@@ -38,21 +44,17 @@ public class DiaryController {
     }
 
 
-    @GetMapping("/diary/{id}")
-    ResponseEntity<DiaryResponse> getDiary(@PathVariable(name = "id") final Long id) {
-        final Diary savedDiary = diaryService.getDiary(id);
-
-        // new 가 아닌 factory 메소드를 사용하면 불변 객체를 만들 수 있는데... 이 부분에 대해서 고민중..
-        final DiaryResponse diaryResponse = new DiaryResponse(
-                savedDiary.getId(),
-                savedDiary.getTitle(),
-                savedDiary.getContent(),
-                savedDiary.getCreatedAt(),
-                savedDiary.getCategory()
-        );
-
+    /**
+     * 일기 상세 조회
+     * @param diaryId 다이어리 아이디
+     * @return 200
+     */
+    @GetMapping("/{diaryId}")
+    ResponseEntity<DiaryResponse> getDiary( @PathVariable("diaryId") final long diaryId) {
+        final DiaryResponse diaryResponse = diaryService.getDiary(diaryId);
         return ResponseEntity.ok(diaryResponse);
     }
+
 
     @PatchMapping("/diary/{id}")
     ResponseEntity<String> updateDiary(@PathVariable(name = "id") final Long id, @RequestBody DiaryUpdateReq diaryRequest){

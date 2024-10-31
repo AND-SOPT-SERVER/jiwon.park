@@ -1,18 +1,18 @@
 package org.sopt.Diary.service;
 
-import org.sopt.Diary.dto.Diary;
 import org.sopt.Diary.dto.res.DiariesResponse;
 import org.sopt.Diary.dto.req.DiaryReq;
+import org.sopt.Diary.dto.res.DiaryResponse;
 import org.sopt.Diary.entity.Category;
 import org.sopt.Diary.entity.DiaryEntity;
 import org.sopt.Diary.repository.DiaryRepository;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
+import org.springframework.web.client.HttpServerErrorException;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.time.Duration;
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -50,6 +50,15 @@ public class DiaryService {
         );
     }
 
+    public DiaryResponse getDiary(long id) {
+        DiaryEntity diaryEntity = findById(id);
+        return new DiaryResponse(diaryEntity.getId(),
+                diaryEntity.getTitle(),
+                diaryEntity.getContent(),
+                diaryEntity.getContent(),
+                diaryEntity.getCategory());
+    }
+
 
     private List<DiariesResponse> toDiariesResponse(List<DiaryEntity> diaryEntities) {
         List<DiariesResponse> diariesResponses = new ArrayList<>();
@@ -79,13 +88,7 @@ public class DiaryService {
         return toDiariesResponse(diaryEntities);
     }
 
-    public Diary getDiary(Long id) {
-        DiaryEntity diaryEntity = findById(id);
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
-        String formattedDate = diaryEntity.getCreatedAt().format(formatter);
 
-        return new Diary(diaryEntity.getId(), diaryEntity.getTitle(), diaryEntity.getContent(), formattedDate, diaryEntity.getCategory());
-    }
 
     public void patchDiary(Long id, String content, Category category) {
         DiaryEntity diaryEntity= findById(id);
@@ -97,10 +100,11 @@ public class DiaryService {
         diaryRepository.delete(diaryEntity);
     }
 
-    public DiaryEntity findById(Long id){
-        return diaryRepository.findById(id)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+    public DiaryEntity findById(final long id){
+        return diaryRepository.findByIdAndIsPrivateFalse(id)
+                .orElseThrow(() -> new HttpServerErrorException(HttpStatus.NOT_FOUND));
     }
+
 
 
     public void validateTitle(String title){
