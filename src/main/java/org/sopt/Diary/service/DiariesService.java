@@ -1,5 +1,6 @@
 package org.sopt.Diary.service;
 
+import jakarta.transaction.Transactional;
 import org.sopt.Diary.Formatter.DiaryFormatter;
 import org.sopt.Diary.dto.res.DiariesRes;
 import org.sopt.Diary.dto.res.DiaryListRes;
@@ -9,13 +10,14 @@ import org.sopt.Diary.entity.SortType;
 import org.sopt.Diary.entity.UserEntity;
 import org.sopt.Diary.repository.DiaryRepository;
 import org.springframework.http.HttpStatus;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.util.ArrayList;
 import java.util.List;
 
-@Component
+@Transactional
+@Service
 public class DiariesService {
 
     private final static int LIMIT_DIARY = 10;

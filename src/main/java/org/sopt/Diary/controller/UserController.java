@@ -18,6 +18,10 @@ public class UserController {
 
     public UserController(final  UserService userService){this.userService=userService;}
 
+    /**
+     * 회원가입
+     * @param signUpRequest  Id, Pwd, Nickname
+     */
     @PostMapping("/signup")
     private void signUp(@Valid @RequestBody SignUpReq signUpRequest){
         // 제약사항 따로 없음
@@ -25,6 +29,11 @@ public class UserController {
         userService.join(signUpRequest);
     }
 
+    /**
+     * 로그인
+     * @param signInReq Id, Pwd
+     * @return 200
+     */
     @PostMapping("/signin")
     private UserRes signIn(@Valid @RequestBody SignInReq signInReq){
         Long userId= userService.login(signInReq);

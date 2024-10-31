@@ -1,18 +1,19 @@
 package org.sopt.Diary.service;
 
+import jakarta.transaction.Transactional;
 import org.sopt.Diary.dto.req.DiaryReq;
 import org.sopt.Diary.dto.res.DiaryRes;
 import org.sopt.Diary.entity.Category;
 import org.sopt.Diary.entity.DiaryEntity;
 import org.sopt.Diary.repository.DiaryRepository;
 import org.springframework.http.HttpStatus;
-import org.springframework.stereotype.Component;
 
+
+import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
-
-
-@Component
+@Transactional
+@Service
 public class DiaryService {
 
 

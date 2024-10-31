@@ -50,6 +50,13 @@ public class DiaryController {
         return ResponseEntity.ok(diaryRes);
     }
 
+    /**
+     * 일기 수정
+     * @param userId 유저 아이디
+     * @param diaryId 다이어리 아이디
+     * @param diaryRequest content,category
+     * @return 200
+     */
     @PatchMapping("/{diaryId}")
     ResponseEntity<String> updateDiary(@RequestHeader("userId") long userId,
                                        @PathVariable("diaryId") final long diaryId,
@@ -63,6 +70,12 @@ public class DiaryController {
         return ResponseEntity.ok("일기가 수정되었습니다.");
     }
 
+    /**
+     * 일기 삭제하기
+     * @param userId 유저 아이디
+     * @param diaryId 다이어리 아이디
+     * @return 200
+     */
     @DeleteMapping("/{diaryId}")
     ResponseEntity<String> deleteDiary(@RequestHeader("userId") long userId,
                                        @PathVariable("diaryId") final long diaryId){
