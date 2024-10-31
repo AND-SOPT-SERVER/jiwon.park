@@ -15,7 +15,6 @@ build/
 .idea/workspace.xml
 .idea/libraries/
 .idea/**
-.idea/vcs.xml
 .idea
 .idea/
 *.iws
@@ -56,3 +55,4 @@ diary.txt
 
 *.yml
 .yml
+/Users/macbook/Desktop/SOPT/Server/homework/seminar/src/main/resources/application.yml
