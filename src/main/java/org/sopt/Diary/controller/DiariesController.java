@@ -1,48 +1,44 @@
 package org.sopt.Diary.controller;
 
+import jakarta.validation.Valid;
 import org.sopt.Diary.dto.res.DiariesResponse;
+import org.sopt.Diary.dto.res.DiaryListResponse;
 import org.sopt.Diary.entity.Category;
+import org.sopt.Diary.entity.SortType;
+import org.sopt.Diary.service.DiariesService;
 import org.sopt.Diary.service.DiaryService;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-@RequestMapping("diaries")
+@RequestMapping("/diaries")
 @RestController
 public class DiariesController {
 
-    private final DiaryService diaryService;
+    private final DiariesService diariesService;
 
-    public DiariesController(DiaryService diaryService) {
-        this.diaryService = diaryService;
+    public DiariesController(DiariesService diariesService) {
+        this.diariesService = diariesService;
     }
 
 
-    @GetMapping("/diaries")
-    public ResponseEntity<List<DiariesResponse>> getDiaries(
-            @RequestParam(name = "category", required = false) Category category,
-            @RequestParam(name = "sortByContentLength",required = false, defaultValue = "false")final Boolean sortByContentLength) {
+    @GetMapping()
+    public ResponseEntity<DiaryListResponse> getDiaries(
+            @RequestParam(name = "category") final Category category,
+            @RequestParam(name = "sort",required = false, defaultValue = "latest") final SortType sortType) {
 
+        DiaryListResponse diaryListResponse = diariesService.getDiariesResponse(category, sortType, false, 0);
+        return ResponseEntity.ok(diaryListResponse);
+    }
 
-        final List<DiariesResponse> diariesResponses;
-        // 각 조건에 따라 한번만 할당되고 추가로 변경되지 않음을 명확하게 하기 위해 final 사용
+    @GetMapping("/my")
+    public ResponseEntity<DiaryListResponse> getMyDiaries(
+            @RequestHeader("userId") long userId,
+            @RequestParam(name = "category") final Category category,
+            @RequestParam(name = "sort",required = false, defaultValue = "latest")final SortType sortType) {
 
-        if (category != null) {
-            // 카테고리로 정렬
-            diariesResponses = diaryService.getDiaryListSortByCategory(category);
-        } else if (sortByContentLength) {
-
-            // 글자수로 정렬
-            diariesResponses = diaryService.getDiaryListSortByContent();
-        } else {
-            //최신순으로 정렬
-            diariesResponses = diaryService.getDiaryList();
-        }
-
-        return ResponseEntity.ok(diariesResponses);
+        DiaryListResponse diaryListResponse = diariesService.getDiariesResponse(category, sortType, true, userId);
+        return ResponseEntity.ok(diaryListResponse);
     }
 }

@@ -1,6 +1,6 @@
 package org.sopt.Diary.dto.res;
 
-public record DiariesResponse(Long id, String title){
+public record DiariesResponse(Long id, String username,String title, String cratedAt){
 }
 //레코드를 이용하도록 수정-
 // - 레코드를 사용하면 모든 필드가 자동으로 final이 되고

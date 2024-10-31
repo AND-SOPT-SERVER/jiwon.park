@@ -1,6 +1,20 @@
 package org.sopt.Diary.dto.res;
 
+
 import java.util.List;
 
-public record DiaryListResponse(List<DiariesResponse> diaries) { }
-// 레코드 생성자 변경
+public class DiaryListResponse {
+    private List<DiariesResponse> diaries;
+
+    public DiaryListResponse(List<DiariesResponse> diaries) {
+        this.diaries = diaries;
+    }
+
+    public List<DiariesResponse> getDiaries() {
+        return diaries;
+    }
+
+    public void setDiaries(List<DiariesResponse> diaries) {
+        this.diaries = diaries;
+    }
+}

@@ -2,19 +2,13 @@ package org.sopt.Diary.controller;
 
 import jakarta.validation.Valid;
 import org.sopt.Diary.dto.req.DiaryUpdateReq;
-import org.sopt.Diary.dto.res.DiariesResponse;
 import org.sopt.Diary.dto.req.DiaryReq;
 import org.sopt.Diary.dto.res.DiaryResponse;
-import org.sopt.Diary.entity.Category;
-import org.sopt.Diary.dto.Diary;
 import org.sopt.Diary.service.DiaryService;
 import org.sopt.Diary.service.UserService;
 import org.sopt.Diary.validator.DiaryValidator;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-
-import java.util.List;
 
 @RequestMapping("/diary")
 @RestController
@@ -39,6 +33,7 @@ public class DiaryController {
         //UserId, 내용 글자수 검증
         userService.findByUserId(userId);
         DiaryValidator.checkContent(diaryRequest.content());
+        DiaryValidator.checkTitle(diaryRequest.title());
 
         diaryService.createDiary(userId, diaryRequest);
         return ResponseEntity.ok("일기가 생성되었습니다.");
@@ -68,9 +63,11 @@ public class DiaryController {
         return ResponseEntity.ok("일기가 수정되었습니다.");
     }
 
-    @DeleteMapping("/diary/{id}")
-    ResponseEntity<String> deleteDiary(@PathVariable(name = "id") final Long id){
-        diaryService.deleteDiary(id);
+    @DeleteMapping("/{diaryId}")
+    ResponseEntity<String> deleteDiary(@RequestHeader("userId") long userId,
+                                       @PathVariable("diaryId") final long diaryId){
+        userService.findByUserId(userId);
+        diaryService.deleteDiary(userId,diaryId);
         return ResponseEntity.ok("일기가 삭제되었습니다.");
     }
 }

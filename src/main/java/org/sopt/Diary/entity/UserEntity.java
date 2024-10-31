@@ -1,7 +1,6 @@
 package org.sopt.Diary.entity;
 
 import jakarta.persistence.*;
-import org.sopt.Diary.dto.UserDTO;
 
 @Entity
 @Table(name="user")
@@ -35,6 +34,9 @@ public class UserEntity {
 
     public long getId(){
         return this.id;
+    }
+    public String getNickname(){
+        return this.nickname;
     }
 
 
