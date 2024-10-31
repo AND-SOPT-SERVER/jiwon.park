@@ -31,10 +31,7 @@ public class DiaryService {
 
     final public void createDiary(final long userId, final DiaryReq diaryRequest) {
 
-       if(!userService.findById(userId)){
-           throw new ResponseStatusException(HttpStatus.NOT_FOUND);
-       }
-
+        findByDiaryId(userId);
         validateTitle(diaryRequest.title());
 
         int minutesSinceLastDiary = calculateMinutesSinceLastDiary();
@@ -46,17 +43,31 @@ public class DiaryService {
                 new DiaryEntity(diaryRequest.title(),
                 diaryRequest.content(),
                 diaryRequest.category(),
-                diaryRequest.isPrivate())
+                diaryRequest.isPrivate(),
+                userId)
         );
     }
 
-    public DiaryResponse getDiary(long id) {
-        DiaryEntity diaryEntity = findById(id);
-        return new DiaryResponse(diaryEntity.getId(),
+    public DiaryResponse getDiary(final long id) {
+        DiaryEntity diaryEntity = findByDiaryId(id);
+        return new DiaryResponse(diaryEntity.getDiaryId(),
                 diaryEntity.getTitle(),
                 diaryEntity.getContent(),
                 diaryEntity.getContent(),
                 diaryEntity.getCategory());
+    }
+
+    public void patchDiary(final long userId, final long diaryId, final String content, final Category category) {
+        DiaryEntity diaryEntity= findByDiaryId(diaryId);
+        if(diaryEntity.getUserId()!=userId){
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN);
+        }
+        diaryRepository.save(new DiaryEntity(diaryEntity.getDiaryId(),
+                diaryEntity.getTitle(),
+                content,
+                diaryEntity.getCreatedAt(),
+                category,
+                diaryEntity.getUserId()));
     }
 
 
@@ -66,7 +77,7 @@ public class DiaryService {
 
         for (DiaryEntity diary : diaryEntities) {
             if (count >= LIMIT_DIARY) break;
-            DiariesResponse diariesResponse = new DiariesResponse(diary.getId(), diary.getTitle());
+            DiariesResponse diariesResponse = new DiariesResponse(diary.getDiaryId(), diary.getTitle());
             diariesResponses.add(diariesResponse);
             count++;
         }
@@ -90,17 +101,14 @@ public class DiaryService {
 
 
 
-    public void patchDiary(Long id, String content, Category category) {
-        DiaryEntity diaryEntity= findById(id);
-        diaryRepository.save(new DiaryEntity(diaryEntity.getId(), diaryEntity.getTitle(), content, diaryEntity.getCreatedAt(), category));
-    }
+
 
     public void deleteDiary(Long id) {
-        DiaryEntity diaryEntity= findById(id);
+        DiaryEntity diaryEntity= findByDiaryId(id);
         diaryRepository.delete(diaryEntity);
     }
 
-    public DiaryEntity findById(final long id){
+    public DiaryEntity findByDiaryId(final long id){
         return diaryRepository.findByIdAndIsPrivateFalse(id)
                 .orElseThrow(() -> new HttpServerErrorException(HttpStatus.NOT_FOUND));
     }

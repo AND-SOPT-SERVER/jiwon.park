@@ -2,15 +2,14 @@ package org.sopt.Diary.validator;
 
 import org.springframework.stereotype.Component;
 
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
-
 @Component
 public class DiaryValidator {
 
-    public static  String dateFormatter(LocalDateTime createdDate){
-    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"); //ForMat 을 하는 부분이
-    return  createdDate.format(formatter);
+    private final static int LENGTH_LIMIT = 30;
 
+    public static void checkContent(String content) {
+        if(content.length() > LENGTH_LIMIT){
+            throw new IllegalArgumentException("글자 수는 30자를 넘을 수 없습니다");
+        }
     }
 }

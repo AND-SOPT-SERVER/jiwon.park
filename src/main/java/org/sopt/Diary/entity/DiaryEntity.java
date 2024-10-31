@@ -9,6 +9,7 @@ import java.time.LocalDateTime;
 public class DiaryEntity {
 
     @Id
+    @Column(name="id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
@@ -29,26 +30,31 @@ public class DiaryEntity {
     @Enumerated(EnumType.STRING) //enum 이름 그대로 DB에 저장된다
     private Category category;
 
+    @Column(name="user_id")
+    private Long userId;
+
     //JPA 는 엔티티 객체를 생성할때 기본 생성자를 사용하므로  반드시 있어야 한다!
     public DiaryEntity() {}
 
-    public DiaryEntity(final String title,final String content,final Category category,final Boolean isPrivate) {
+    public DiaryEntity(final String title,final String content,final Category category,final boolean isPrivate,final long userId) {
         this.title = title;
         this.content = content;
         this.category = category;
         this.isPrivate =isPrivate;
+        this.userId = userId;
     }
 
 
-    public DiaryEntity(final Long id, final String title, final String content, final LocalDateTime createdAt, final Category category) {
+    public DiaryEntity(final long id, final String title, final String content, final LocalDateTime createdAt, final Category category,final long userId) {
         this. id = id;
         this.title  = title;
         this.content = content;
         this.createdAt = createdAt;
         this.category = category;
+        this.userId= userId;
     }
 
-    public long getId(){
+    public long getDiaryId(){
         return id;
     }
 
@@ -65,6 +71,9 @@ public class DiaryEntity {
 
     public Category getCategory(){
         return category;
+    }
+    public long getUserId(){
+        return userId;
     }
 
 }

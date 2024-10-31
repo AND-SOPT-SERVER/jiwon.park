@@ -44,8 +44,10 @@ public class UserService {
         return findUser.getId();
     }
 
-    public boolean findById(@Valid final long userId){
-        Optional<UserEntity> findUser = userRepository.findById(userId);
-        return findUser.isPresent();
+    // UserService.java
+    public UserEntity findByUserId(final long userId) {
+        return userRepository.findById(userId)
+                .orElseThrow(() -> new IllegalStateException("존재하지 않는 사용자입니다."));
     }
+
 }
