@@ -32,11 +32,11 @@ public class DiaryEntity {
     //JPA 는 엔티티 객체를 생성할때 기본 생성자를 사용하므로  반드시 있어야 한다!
     public DiaryEntity() {}
 
-    public DiaryEntity(String title, String content,Category category) {
+    public DiaryEntity(final String title,final String content,final Category category,final Boolean isPrivate) {
         this.title = title;
         this.content = content;
         this.category = category;
-
+        this.isPrivate =isPrivate;
     }
 
 

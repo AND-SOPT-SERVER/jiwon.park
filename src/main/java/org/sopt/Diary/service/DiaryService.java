@@ -22,18 +22,19 @@ public class DiaryService {
     private final static int LIMIT_MINUTE = 5;
     private final static int LIMIT_DIARY = 10;
     private final DiaryRepository diaryRepository;
+    private final UserService userService;
 
-    public DiaryService(DiaryRepository diaryRepository) {
+    public DiaryService(DiaryRepository diaryRepository, UserService userService) {
         this.diaryRepository = diaryRepository;
+        this.userService = userService;
     }
 
-    public void validateTitle(String title){
-        if(diaryRepository.existsByTitle(title)){
-            throw new ResponseStatusException(HttpStatus.NOT_ACCEPTABLE,"중복왼 제목은 북자능 합니다.");
-        }
-    }
+    final public void createDiary(final long userId, final DiaryReq diaryRequest) {
 
-    public void createDiary(DiaryReq diaryRequest) {
+       if(!userService.findById(userId)){
+           throw new ResponseStatusException(HttpStatus.NOT_FOUND);
+       }
+
         validateTitle(diaryRequest.title());
 
         int minutesSinceLastDiary = calculateMinutesSinceLastDiary();
@@ -41,21 +42,14 @@ public class DiaryService {
             throw new ResponseStatusException(HttpStatus.TOO_MANY_REQUESTS, "5분 뒤에 요청해주세요");
         }
 
-        Diary diary = new Diary(diaryRequest.title(), diaryRequest.content(), diaryRequest.category());
-        diaryRepository.save(new DiaryEntity(diary.getTitle(), diary.getContent(), diary.getCategory()));
+        diaryRepository.save(
+                new DiaryEntity(diaryRequest.title(),
+                diaryRequest.content(),
+                diaryRequest.category(),
+                diaryRequest.isPrivate())
+        );
     }
 
-    private int calculateMinutesSinceLastDiary() {
-        DiaryEntity latestDiary = diaryRepository.findTop1ByOrderByCreatedAtDesc();
-
-        if (latestDiary != null) {
-            LocalDateTime now = LocalDateTime.now();
-            LocalDateTime latest = latestDiary.getCreatedAt();
-            Duration duration = Duration.between(latest, now);
-            return duration.toMinutesPart();
-        }
-        return Integer.MAX_VALUE;  // 다이어리가 없을 경우, 제한 시간이 없도록 큰 값 반환
-    }
 
     private List<DiariesResponse> toDiariesResponse(List<DiaryEntity> diaryEntities) {
         List<DiariesResponse> diariesResponses = new ArrayList<>();
@@ -106,5 +100,24 @@ public class DiaryService {
     public DiaryEntity findById(Long id){
         return diaryRepository.findById(id)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+    }
+
+
+    public void validateTitle(String title){
+        if(diaryRepository.existsByTitle(title)){
+            throw new ResponseStatusException(HttpStatus.NOT_ACCEPTABLE,"중복된 제목은 불가능 합니다.");
+        }
+    }
+
+    private int calculateMinutesSinceLastDiary() {
+        DiaryEntity latestDiary = diaryRepository.findTop1ByOrderByCreatedAtDesc();
+
+        if (latestDiary != null) {
+            LocalDateTime now = LocalDateTime.now();
+            LocalDateTime latest = latestDiary.getCreatedAt();
+            Duration duration = Duration.between(latest, now);
+            return duration.toMinutesPart();
+        }
+        return Integer.MAX_VALUE;  // 다이어리가 없을 경우, 제한 시간이 없도록 큰 값 반환
     }
 }

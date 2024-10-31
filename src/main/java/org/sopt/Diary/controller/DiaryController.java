@@ -1,5 +1,6 @@
 package org.sopt.Diary.controller;
 
+import jakarta.validation.Valid;
 import org.sopt.Diary.dto.req.DiaryUpdateReq;
 import org.sopt.Diary.dto.res.DiariesResponse;
 import org.sopt.Diary.dto.req.DiaryReq;
@@ -13,6 +14,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+@RequestMapping("/diary")
 @RestController
 public class DiaryController {
 
@@ -24,40 +26,17 @@ public class DiaryController {
 
     private final static int LENGTH_LIMIT = 30;
 
-    @PostMapping("/diary")
-    ResponseEntity<String> postDiary(@RequestBody final DiaryReq diaryRequest) {
-        //final 을 붙여서 매개변수의 재할당을 막음!!
+    @PostMapping()
+    ResponseEntity<String> postDiary(@RequestHeader("userId") Long userId, @Valid @RequestBody final DiaryReq diaryRequest) {
 
         if(diaryRequest.content().length()>LENGTH_LIMIT){
             return ResponseEntity.badRequest().body("글자 수는 30자를 넘을 수 없습니다");
         }
-        diaryService.createDiary(diaryRequest);
+
+        diaryService.createDiary(userId, diaryRequest);
         return ResponseEntity.ok("일기가 생성되었습니다.");
     }
 
-    @GetMapping("/diaries")
-    public ResponseEntity<List<DiariesResponse>> getDiaries(
-            @RequestParam(name = "category", required = false)  Category category,
-            @RequestParam(name = "sortByContentLength",required = false, defaultValue = "false")final Boolean sortByContentLength) {
-
-
-        final List<DiariesResponse> diariesResponses;
-        // 각 조건에 따라 한번만 할당되고 추가로 변경되지 않음을 명확하게 하기 위해 final 사용
-
-        if (category != null) {
-            // 카테고리로 정렬
-            diariesResponses = diaryService.getDiaryListSortByCategory(category);
-        } else if (sortByContentLength) {
-
-            // 글자수로 정렬
-            diariesResponses = diaryService.getDiaryListSortByContent();
-        } else {
-            //최신순으로 정렬
-            diariesResponses = diaryService.getDiaryList();
-        }
-
-        return ResponseEntity.ok(diariesResponses);
-    }
 
     @GetMapping("/diary/{id}")
     ResponseEntity<DiaryResponse> getDiary(@PathVariable(name = "id") final Long id) {

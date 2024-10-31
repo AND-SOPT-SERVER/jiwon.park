@@ -43,4 +43,9 @@ public class UserService {
         // 2. UserID 반환
         return findUser.getId();
     }
+
+    public boolean findById(@Valid final long userId){
+        Optional<UserEntity> findUser = userRepository.findById(userId);
+        return findUser.isPresent();
+    }
 }
