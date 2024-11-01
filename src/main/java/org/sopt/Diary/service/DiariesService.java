@@ -1,7 +1,7 @@
 package org.sopt.Diary.service;
 
 import jakarta.transaction.Transactional;
-import org.sopt.Diary.Formatter.DiaryFormatter;
+import org.sopt.Diary.formatter.DiaryFormatter;
 import org.sopt.Diary.dto.res.DiariesRes;
 import org.sopt.Diary.dto.res.DiaryListRes;
 import org.sopt.Diary.entity.Category;
@@ -24,24 +24,24 @@ public class DiariesService {
     private final DiaryRepository diaryRepository;
     private final UserService userService;
 
-    public DiariesService(DiaryRepository diaryRepository, UserService userService) {
+    public DiariesService( DiaryRepository diaryRepository,  UserService userService) {
         this.diaryRepository = diaryRepository;
         this.userService = userService;
     }
 
     private List<DiariesRes> getDiaryResponse(List<DiaryEntity> diaryEntities) {
-        List<DiariesRes> diariesRespons = new ArrayList<>();
+        List<DiariesRes> diariesResponse = new ArrayList<>();
         int count =0;
         for (DiaryEntity diary : diaryEntities) {
             if(count < LIMIT_DIARY) {
                 final UserEntity user = userService.findByUserId(diary.getUserId());
                 final String createdAt = DiaryFormatter.dateFormatter(diary.getCreatedAt());
                 DiariesRes diariesRes = new DiariesRes(diary.getDiaryId(), user.getNickname(), diary.getTitle(), createdAt);
-                diariesRespons.add(diariesRes);
+                diariesResponse.add(diariesRes);
                 count++;
             }
         }
-        return diariesRespons;
+        return diariesResponse;
     }
 
     public List<DiariesRes> getDiaryList(Category category, SortType sortType) {

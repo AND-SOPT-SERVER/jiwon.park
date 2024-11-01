@@ -12,6 +12,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
+
 @Transactional
 @Service
 public class DiaryService {
@@ -35,9 +36,15 @@ public class DiaryService {
         );
     }
 
-    public DiaryRes getDiary(final long id) {
+    public DiaryRes getDiary(final Long userId, final long diaryId) {
+        DiaryEntity diaryEntity = findByDiaryId(diaryId);
 
-        DiaryEntity diaryEntity = findByDiaryIdPrivateFalse(id);
+        //비공개 일기일 경우
+        if(diaryEntity.getIsPrivate()) {
+            if(userId == null || (userId != diaryEntity.getUserId())){
+                throw new ResponseStatusException(HttpStatus.FORBIDDEN);
+            }
+        }
 
         return new DiaryRes(diaryEntity.getDiaryId(),
                 diaryEntity.getTitle(),
@@ -45,6 +52,7 @@ public class DiaryService {
                 diaryEntity.getContent(),
                 diaryEntity.getCategory());
     }
+
 
     public void patchDiary(final long userId, final long diaryId, final String content, final Category category) {
 
@@ -76,15 +84,12 @@ public class DiaryService {
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,"일기를 찾을 수 없습니다"));
     }
 
-    public DiaryEntity findByDiaryIdPrivateFalse(final long id){
-        return diaryRepository.findByIdAndIsPrivateFalse(id)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,"일기를 찾을 수 없습니다"));
-    }
 
     public void validateTitle(final String title){
         if(diaryRepository.existsByTitle(title)){
             throw new ResponseStatusException(HttpStatus.NOT_ACCEPTABLE,"중복된 제목은 불가능 합니다.");
         }
     }
+
 
 }

@@ -1,4 +1,4 @@
-package org.sopt.Diary.Formatter;
+package org.sopt.Diary.formatter;
 
 import org.springframework.stereotype.Component;
 

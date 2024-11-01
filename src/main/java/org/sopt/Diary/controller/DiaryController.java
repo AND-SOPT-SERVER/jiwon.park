@@ -16,6 +16,7 @@ public class DiaryController {
 
     private final DiaryService diaryService;
     private final UserService userService;
+
     public DiaryController(DiaryService diaryService,UserService userService) {
         this.diaryService = diaryService;
         this.userService=userService;
@@ -45,8 +46,9 @@ public class DiaryController {
      * @return 200
      */
     @GetMapping("/{diaryId}")
-    ResponseEntity<DiaryRes> getDiary(@PathVariable("diaryId") final long diaryId) {
-        final DiaryRes diaryRes = diaryService.getDiary(diaryId);
+    ResponseEntity<DiaryRes> getDiary(@RequestHeader(name="userId",required = false) Long userId, @PathVariable("diaryId") final long diaryId) {
+        DiaryRes diaryRes  = diaryService.getDiary(userId, diaryId);
+
         return ResponseEntity.ok(diaryRes);
     }
 

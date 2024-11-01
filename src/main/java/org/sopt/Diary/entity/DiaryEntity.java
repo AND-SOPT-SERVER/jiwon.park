@@ -76,5 +76,8 @@ public class DiaryEntity {
         return userId;
     }
 
+    public boolean getIsPrivate() {
+        return isPrivate;
+    }
 }
 
