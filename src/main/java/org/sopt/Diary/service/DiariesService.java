@@ -2,6 +2,8 @@ package org.sopt.Diary.service;
 
 import jakarta.transaction.Transactional;
 import org.sopt.Diary.dto.res.DiaryListRes;
+import org.sopt.Diary.error.CustomException;
+import org.sopt.Diary.error.ErrorCode;
 import org.sopt.Diary.formatter.DiaryFormatter;
 import org.sopt.Diary.dto.res.DiariesRes;
 import org.sopt.Diary.entity.Category;
@@ -9,9 +11,8 @@ import org.sopt.Diary.entity.DiaryEntity;
 import org.sopt.Diary.entity.SortType;
 import org.sopt.Diary.entity.UserEntity;
 import org.sopt.Diary.repository.DiaryRepository;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
-import org.springframework.web.server.ResponseStatusException;
+
 
 import java.util.Comparator;
 import java.util.List;
@@ -46,7 +47,7 @@ public class DiariesService {
 
         // Optional 로 처리하지 않은 이유 : 위에서 공통적인 에러 발생할 예정이라 한 번에 처리하려고
         if(diaryEntities==null){
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND);
+            throw new CustomException(ErrorCode.DIARY_NOT_FOUND);
         }
 
         // 선택된 카테고리에 따라 필터링

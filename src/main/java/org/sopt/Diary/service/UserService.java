@@ -6,6 +6,8 @@ import org.sopt.Diary.dto.req.SignInReq;
 import org.sopt.Diary.dto.req.SignUpReq;
 
 import org.sopt.Diary.entity.UserEntity;
+import org.sopt.Diary.error.CustomException;
+import org.sopt.Diary.error.ErrorCode;
 import org.sopt.Diary.repository.UserRepository;
 import org.springframework.stereotype.Service;
 
@@ -31,7 +33,7 @@ public class UserService {
     private void validateDuplicateMember(final String loginId, final String password) {
         Optional<UserEntity> findUser = userRepository.findByLoginIdAndPassword(loginId, password);
         if(findUser.isPresent()){
-            throw new IllegalStateException("이미 존재하는 회원입니다");
+            throw new CustomException(ErrorCode.ALREADY_EXIST_USER);
         }
     }
 
@@ -39,7 +41,7 @@ public class UserService {
 
         // 1. userRepository 에서 Id 찾기 -> NPE 방지 위해 Optional 사용
         UserEntity findUser = userRepository.findByLoginIdAndPassword(signInReq.loginId(), signInReq.password())
-                .orElseThrow(()-> new IllegalStateException("로그인 정보가 올바르지 않습니다"));
+                .orElseThrow(()-> new CustomException(ErrorCode.BAD_REQUEST));
         // 2. UserID 반환
         return findUser.getId();
     }
@@ -47,7 +49,7 @@ public class UserService {
     // UserService.java
     public UserEntity findByUserId(final long userId) {
         return userRepository.findById(userId)
-                .orElseThrow(() -> new IllegalStateException("존재하지 않는 사용자입니다."));
+                .orElseThrow(() -> new CustomException(ErrorCode.INVALID_USER));
     }
 
 }

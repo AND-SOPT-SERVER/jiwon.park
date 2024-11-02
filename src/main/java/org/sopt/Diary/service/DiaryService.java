@@ -5,6 +5,8 @@ import org.sopt.Diary.dto.req.DiaryReq;
 import org.sopt.Diary.dto.res.DiaryRes;
 import org.sopt.Diary.entity.Category;
 import org.sopt.Diary.entity.DiaryEntity;
+import org.sopt.Diary.error.CustomException;
+import org.sopt.Diary.error.ErrorCode;
 import org.sopt.Diary.repository.DiaryRepository;
 import org.springframework.http.HttpStatus;
 
@@ -43,7 +45,7 @@ public class DiaryService {
         //비공개 일기일 경우 = userId 검증
         if(diaryEntity.getIsPrivate()) {
             if( userId != diaryEntity.getUserId()){
-                throw new ResponseStatusException(HttpStatus.FORBIDDEN);
+                throw new CustomException(ErrorCode.ACCESS_DENIED);
             }
         }
 
@@ -60,7 +62,7 @@ public class DiaryService {
         DiaryEntity diaryEntity = findByDiaryId(diaryId);
 
         if(diaryEntity.getUserId()!=userId){
-            throw new ResponseStatusException(HttpStatus.FORBIDDEN);
+            throw new CustomException(ErrorCode.ACCESS_DENIED);
         }
         diaryRepository.save(new DiaryEntity(diaryEntity.getDiaryId(),
                 diaryEntity.getTitle(),
@@ -75,20 +77,20 @@ public class DiaryService {
         DiaryEntity diaryEntity= findByDiaryId(diaryId);
 
         if(diaryEntity.getUserId()!=userId){
-            throw new ResponseStatusException(HttpStatus.FORBIDDEN);
+            throw new CustomException(ErrorCode.ACCESS_DENIED);
         }
         diaryRepository.delete(diaryEntity);
     }
 
     public DiaryEntity findByDiaryId(final long id){
         return diaryRepository.findById(id)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,"일기를 찾을 수 없습니다"));
+                .orElseThrow(() ->  new CustomException(ErrorCode.DIARY_NOT_FOUND));
     }
 
 
     public void validateTitle(final String title){
         if(diaryRepository.existsByTitle(title)){
-            throw new ResponseStatusException(HttpStatus.NOT_ACCEPTABLE,"중복된 제목은 불가능 합니다.");
+            throw new CustomException(ErrorCode.DUPLICATE_TITLE);
         }
     }
 
