@@ -1,9 +1,9 @@
 package org.sopt.Diary.service;
 
 import jakarta.transaction.Transactional;
+import org.sopt.Diary.dto.res.DiaryListRes;
 import org.sopt.Diary.formatter.DiaryFormatter;
 import org.sopt.Diary.dto.res.DiariesRes;
-import org.sopt.Diary.dto.res.DiaryListRes;
 import org.sopt.Diary.entity.Category;
 import org.sopt.Diary.entity.DiaryEntity;
 import org.sopt.Diary.entity.SortType;
@@ -13,8 +13,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
-import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Transactional
 @Service
@@ -24,80 +25,63 @@ public class DiariesService {
     private final DiaryRepository diaryRepository;
     private final UserService userService;
 
-    public DiariesService( DiaryRepository diaryRepository,  UserService userService) {
+    public DiariesService(DiaryRepository diaryRepository, UserService userService) {
         this.diaryRepository = diaryRepository;
         this.userService = userService;
     }
 
-    private List<DiariesRes> getDiaryResponse(List<DiaryEntity> diaryEntities) {
-        List<DiariesRes> diariesResponse = new ArrayList<>();
-        int count =0;
-        for (DiaryEntity diary : diaryEntities) {
-            if(count < LIMIT_DIARY) {
-                final UserEntity user = userService.findByUserId(diary.getUserId());
-                final String createdAt = DiaryFormatter.dateFormatter(diary.getCreatedAt());
-                DiariesRes diariesRes = new DiariesRes(diary.getDiaryId(), user.getNickname(), diary.getTitle(), createdAt);
-                diariesResponse.add(diariesRes);
-                count++;
-            }
-        }
-        return diariesResponse;
-    }
-
-    public List<DiariesRes> getDiaryList(Category category, SortType sortType) {
+    public DiaryListRes getDiariesResponse(Category category, SortType sortType, boolean isMine, Long userId) {
         List<DiaryEntity> diaryEntities;
-
-        if (category == Category.all) {
-            diaryEntities = switch (sortType) {
-                case latest -> diaryRepository.findAllByIsPrivateFalseOrderByCreatedAtDesc()
-                        .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "일기를 찾을 수 없습니다"));
-                case quantity -> diaryRepository.findAllByIsPrivateFalseOrderByContentLengthDesc()
-                        .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "일기를 찾을 수 없습니다"));
-            };
-        } else {
-            diaryEntities = switch (sortType) {
-                case latest -> diaryRepository.findByCategoryAndIsPrivateFalseOrderByCreatedAtDesc(category)
-                        .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "일기를 찾을 수 없습니다"));
-                case quantity -> diaryRepository.findByCategoryAndIsPrivateFalseOrderByContentLengthDesc(category)
-                        .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "일기를 찾을 수 없습니다"));
-            };
-        }
-        return getDiaryResponse(diaryEntities);
-    }
-
-    public List<DiariesRes> getMyDiaryList(long userId, Category category, SortType sortType) {
-        List<DiaryEntity> diaryEntities;
-
-        if (category == Category.all) {
-            diaryEntities = switch (sortType) {
-                case latest -> diaryRepository.findByUserIdOrderByCreatedAtDesc(userId)
-                        .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "일기를 찾을 수 없습니다"));
-                case quantity -> diaryRepository.findByUserIdOrderByContentLengthDesc(userId)
-                        .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "일기를 찾을 수 없습니다"));
-
-            };
-        } else {
-            diaryEntities = switch (sortType) {
-                case latest -> diaryRepository.findByUserIdAndCategoryOrderByCreatedAtDesc(userId, category)
-                        .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "일기를 찾을 수 없습니다"));
-                case quantity -> diaryRepository.findByUserIdAndCategoryOrderByContentLengthDesc(userId, category)
-                        .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "일기를 찾을 수 없습니다"));
-            };
-        }
-
-        return getDiaryResponse(diaryEntities);
-    }
-
-    public DiaryListRes getDiariesResponse(Category category, SortType sortType, boolean isMine, long userId) {
-        List<DiariesRes> diaryResponses;
 
         if (isMine) {
-            diaryResponses = getMyDiaryList(userId, category, sortType);
+            //  /my 로 들어온 경우 - 내가 쓴 일기만 조회
+            diaryEntities = diaryRepository.findByUserId(userId);
+        } else if (userId == null) {
+            // userId 없는 경우 - 공개된 일기만 조회
+            diaryEntities = diaryRepository.findAllByIsPrivateFalse();
         } else {
-            diaryResponses = getDiaryList(category, sortType);
+            // userId가 null 이 아닌 경우, 해당 user 의 일기와 isPrivateFalse 인 일기가 보이도록
+            diaryEntities = diaryRepository.findByUserIdOrIsPrivateFalse(userId);
         }
 
-        return new DiaryListRes(diaryResponses);
+        // Optional 로 처리하지 않은 이유 : 위에서 공통적인 에러 발생할 예정이라 한 번에 처리하려고
+        if(diaryEntities==null){
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND);
+        }
+
+        // 선택된 카테고리에 따라 필터링
+        if (category != Category.all) {
+            diaryEntities = diaryEntities.stream()
+                    .filter(diary -> diary.getCategory() == category)
+                    .collect(Collectors.toList());
+        }
+
+        // sortType 에 따른 필터링
+        Comparator<DiaryEntity> comparator = getComparator(sortType);
+        diaryEntities = diaryEntities.stream()
+                .sorted(comparator)
+                .limit(LIMIT_DIARY)  // 10개 제한
+                .collect(Collectors.toList());
+
+        return new DiaryListRes(getDiaryResponse(diaryEntities));
+    }
+
+    private Comparator<DiaryEntity> getComparator(SortType sortType) {
+        return switch (sortType) {
+            case latest -> Comparator.comparing(DiaryEntity::getCreatedAt).reversed(); // 최신 순 정렬
+            case quantity -> Comparator.comparingInt((DiaryEntity diary) -> diary.getContent().length()).reversed(); // 내용 길이 기준 내림차순 정렬
+        };
+    }
+
+    // userNickName, date 형식 변환을 위한 메소드
+    private List<DiariesRes> getDiaryResponse(List<DiaryEntity> diaryEntities) {
+        return diaryEntities.stream()
+                .map(diary -> {
+                    final UserEntity user = userService.findByUserId(diary.getUserId());
+                    final String createdAt = DiaryFormatter.dateFormatter(diary.getCreatedAt());
+                    return new DiariesRes(diary.getDiaryId(), user.getNickname(), diary.getTitle(), createdAt);
+                })
+                .collect(Collectors.toList());
     }
 
 }

@@ -37,11 +37,12 @@ public class DiaryService {
     }
 
     public DiaryRes getDiary(final Long userId, final long diaryId) {
+
         DiaryEntity diaryEntity = findByDiaryId(diaryId);
 
-        //비공개 일기일 경우
+        //비공개 일기일 경우 = userId 검증
         if(diaryEntity.getIsPrivate()) {
-            if(userId == null || (userId != diaryEntity.getUserId())){
+            if( userId != diaryEntity.getUserId()){
                 throw new ResponseStatusException(HttpStatus.FORBIDDEN);
             }
         }

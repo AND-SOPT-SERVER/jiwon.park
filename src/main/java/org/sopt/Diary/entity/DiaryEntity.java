@@ -36,13 +36,18 @@ public class DiaryEntity {
     //JPA 는 엔티티 객체를 생성할때 기본 생성자를 사용하므로  반드시 있어야 한다!
     public DiaryEntity() {}
 
-    public DiaryEntity(final String title,final String content,final Category category,final boolean isPrivate,final long userId) {
+    public DiaryEntity(final String title,final String content,final Category category,final boolean isPrivate,final Long userId) {
         this.title = title;
         this.content = content;
         this.category = category;
         this.isPrivate =isPrivate;
         this.userId = userId;
     }
+
+    public static DiaryEntity of (final String title,final String content,final Category category,final boolean isPrivate,final long userId) {
+        return new DiaryEntity(title, content, category, isPrivate, userId);
+    }
+
 
 
     public DiaryEntity(final long id, final String title, final String content, final LocalDateTime createdAt, final Category category,final long userId) {
@@ -54,7 +59,7 @@ public class DiaryEntity {
         this.userId= userId;
     }
 
-    public long getDiaryId(){
+    public Long getDiaryId(){
         return id;
     }
 
@@ -72,7 +77,7 @@ public class DiaryEntity {
     public Category getCategory(){
         return category;
     }
-    public long getUserId(){
+    public Long getUserId(){
         return userId;
     }
 
