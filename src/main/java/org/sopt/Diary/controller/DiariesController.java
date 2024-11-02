@@ -1,6 +1,5 @@
 package org.sopt.Diary.controller;
 
-import org.sopt.Diary.dto.res.DiariesRes;
 import org.sopt.Diary.dto.res.DiaryListRes;
 import org.sopt.Diary.entity.Category;
 import org.sopt.Diary.entity.SortType;
@@ -8,7 +7,6 @@ import org.sopt.Diary.service.DiariesService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
 
 @RequestMapping("/diaries")
 @RestController
@@ -19,7 +17,6 @@ public class DiariesController {
     public DiariesController(DiariesService diariesService) {
         this.diariesService = diariesService;
     }
-
 
     @GetMapping()
     public ResponseEntity<DiaryListRes> getDiaries(

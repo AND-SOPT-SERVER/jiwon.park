@@ -1,9 +1,8 @@
 package org.sopt.Diary.error;
 
-import lombok.Getter;
 import org.springframework.http.HttpStatus;
 
-@Getter
+
 public enum ErrorCode {
 
     //user
@@ -29,4 +28,15 @@ public enum ErrorCode {
         this.message = message;
     }
 
+    public HttpStatus getStatus() {
+        return status;
+    }
+
+    public String getCode() {
+        return code;
+    }
+
+    public String getMessage() {
+        return message;
+    }
 }
