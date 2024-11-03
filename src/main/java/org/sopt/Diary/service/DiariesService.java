@@ -1,9 +1,6 @@
 package org.sopt.Diary.service;
 
-import jakarta.transaction.Transactional;
 import org.sopt.Diary.dto.res.DiaryListRes;
-import org.sopt.Diary.error.CustomException;
-import org.sopt.Diary.error.ErrorCode;
 import org.sopt.Diary.formatter.DiaryFormatter;
 import org.sopt.Diary.dto.res.DiariesRes;
 import org.sopt.Diary.entity.Category;
@@ -12,13 +9,13 @@ import org.sopt.Diary.entity.SortType;
 import org.sopt.Diary.entity.UserEntity;
 import org.sopt.Diary.repository.DiaryRepository;
 import org.springframework.stereotype.Service;
-
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
-@Transactional
+@Transactional(readOnly=true)
 @Service
 public class DiariesService {
 
@@ -30,6 +27,7 @@ public class DiariesService {
         this.diaryRepository = diaryRepository;
         this.userService = userService;
     }
+
 
     public DiaryListRes getDiariesResponse(Category category, SortType sortType, boolean isMine, Long userId) {
         List<DiaryEntity> diaryEntities;
@@ -43,11 +41,6 @@ public class DiariesService {
         } else {
             // userId가 null 이 아닌 경우, 해당 user 의 일기와 isPrivateFalse 인 일기가 보이도록
             diaryEntities = diaryRepository.findByUserIdOrIsPrivateFalse(userId);
-        }
-
-        // Optional 로 처리하지 않은 이유 : 위에서 공통적인 에러 발생할 예정이라 한 번에 처리하려고
-        if(diaryEntities==null){
-            throw new CustomException(ErrorCode.DIARY_NOT_FOUND);
         }
 
         // 선택된 카테고리에 따라 필터링

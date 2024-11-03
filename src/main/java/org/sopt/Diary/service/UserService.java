@@ -1,10 +1,10 @@
 package org.sopt.Diary.service;
 
-import jakarta.transaction.Transactional;
+
 import jakarta.validation.Valid;
 import org.sopt.Diary.dto.req.SignInReq;
 import org.sopt.Diary.dto.req.SignUpReq;
-
+import org.springframework.transaction.annotation.Transactional;
 import org.sopt.Diary.entity.UserEntity;
 import org.sopt.Diary.error.CustomException;
 import org.sopt.Diary.error.ErrorCode;
@@ -30,13 +30,6 @@ public class UserService {
         userRepository.save(newUserEntity);
     }
 
-    private void validateDuplicateMember(final String loginId, final String password) {
-        Optional<UserEntity> findUser = userRepository.findByLoginIdAndPassword(loginId, password);
-        if(findUser.isPresent()){
-            throw new CustomException(ErrorCode.ALREADY_EXIST_USER);
-        }
-    }
-
     public Long login(@Valid final SignInReq signInReq) {
 
         // 1. userRepository 에서 Id 찾기 -> NPE 방지 위해 Optional 사용
@@ -50,6 +43,13 @@ public class UserService {
     public UserEntity findByUserId(final long userId) {
         return userRepository.findById(userId)
                 .orElseThrow(() -> new CustomException(ErrorCode.INVALID_USER));
+    }
+
+    private void validateDuplicateMember(final String loginId, final String password) {
+        Optional<UserEntity> findUser = userRepository.findByLoginIdAndPassword(loginId, password);
+        if(findUser.isPresent()){
+            throw new CustomException(ErrorCode.ALREADY_EXIST_USER);
+        }
     }
 
 }

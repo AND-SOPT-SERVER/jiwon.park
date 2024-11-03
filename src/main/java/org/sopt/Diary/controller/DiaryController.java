@@ -60,8 +60,8 @@ public class DiaryController {
      * @return 200
      */
     @PatchMapping("/{diaryId}")
-    ResponseEntity<String> updateDiary(@RequestHeader("userId") long userId,
-                                       @PathVariable("diaryId") final long diaryId,
+    ResponseEntity<String> updateDiary(  @RequestHeader("userId") long userId,
+                                        @PathVariable("diaryId") final long diaryId,
                                        @Valid @RequestBody DiaryUpdateReq diaryRequest){
 
         //UserId, 내용 글자수 검증

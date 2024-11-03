@@ -1,5 +1,6 @@
 package org.sopt.Diary.controller;
 
+import jakarta.validation.Valid;
 import org.sopt.Diary.dto.res.DiaryListRes;
 import org.sopt.Diary.entity.Category;
 import org.sopt.Diary.entity.SortType;
@@ -30,8 +31,8 @@ public class DiariesController {
 
     @GetMapping("/my")
     public ResponseEntity<DiaryListRes> getMyDiaries(
-            @RequestHeader("userId") long userId,
-            @RequestParam(name = "category",required = false, defaultValue = "all") final Category category,
+            @Valid @RequestHeader("userId") long userId,
+            @Valid @RequestParam(name = "category",required = false, defaultValue = "all") final Category category,
             @RequestParam(name = "sort",required = false, defaultValue = "latest")final SortType sortType) {
 
         DiaryListRes diaryListRes = diariesService.getDiariesResponse(category, sortType,true,userId);

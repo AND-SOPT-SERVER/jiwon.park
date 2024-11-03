@@ -1,6 +1,6 @@
 package org.sopt.Diary.service;
 
-import jakarta.transaction.Transactional;
+
 import org.sopt.Diary.dto.req.DiaryReq;
 import org.sopt.Diary.dto.res.DiaryRes;
 import org.sopt.Diary.entity.Category;
@@ -9,9 +9,9 @@ import org.sopt.Diary.error.CustomException;
 import org.sopt.Diary.error.ErrorCode;
 import org.sopt.Diary.repository.DiaryRepository;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
-
-@Transactional
+@Transactional(readOnly=true)
 @Service
 public class DiaryService {
 
@@ -22,6 +22,7 @@ public class DiaryService {
         this.diaryRepository = diaryRepository;
     }
 
+    @Transactional
     final public void createDiary(final long userId, final DiaryReq diaryRequest) {
 
         validateTitle(diaryRequest.title());
@@ -52,7 +53,7 @@ public class DiaryService {
                 diaryEntity.getCategory());
     }
 
-
+    @Transactional
     public void patchDiary(final long userId, final long diaryId, final String content, final Category category) {
 
         DiaryEntity diaryEntity = findByDiaryId(diaryId);
@@ -68,6 +69,7 @@ public class DiaryService {
                 diaryEntity.getUserId()));
     }
 
+    @Transactional
     public void deleteDiary(final long userId, final long diaryId) {
 
         DiaryEntity diaryEntity= findByDiaryId(diaryId);
