@@ -15,7 +15,6 @@ build/
 .idea/workspace.xml
 .idea/libraries/
 .idea/**
-.idea/vcs.xml
 .idea
 .idea/
 *.iws

@@ -1,25 +1,20 @@
 package org.sopt.Diary.repository;
 
-import org.sopt.Diary.service.Diary;
-import org.springframework.data.domain.Sort;
+import org.sopt.Diary.entity.DiaryEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.Query;
-import org.springframework.stereotype.Component;
 
+import org.springframework.stereotype.Repository;
 import java.util.List;
 
-@Component
-public interface DiaryRepository extends JpaRepository<DiaryEntity,Long> {
-
-
-    List<DiaryEntity> findTop10ByOrderByCreatedAtDesc();
-
-    DiaryEntity findTop1ByOrderByCreatedAtDesc();
+@Repository
+public interface DiaryRepository extends JpaRepository<DiaryEntity, Long> {
 
     Boolean existsByTitle(String title);
 
-    @Query("SELECT d FROM DiaryEntity d ORDER BY LENGTH(d.content) DESC")
-    List<DiaryEntity> findByContentLength();
+    List<DiaryEntity> findAllByIsPrivateFalse();
 
-    List<DiaryEntity> findByCategory(Category category);
+    // 필수적으로 UserId 필요
+    List<DiaryEntity> findByUserId(long userId);
+
+    List<DiaryEntity> findByUserIdOrIsPrivateFalse(Long userId);
 }
