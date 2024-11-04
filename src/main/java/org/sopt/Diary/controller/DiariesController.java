@@ -22,8 +22,8 @@ public class DiariesController {
     @GetMapping()
     public ResponseEntity<DiaryListRes> getDiaries(
             @RequestHeader(name="userId" , required = false) Long userId,
-            @RequestParam(name = "category" , required = false, defaultValue = "all") final Category category,
-            @RequestParam(name = "sort",required = false, defaultValue = "latest") final SortType sortType) {
+            @RequestParam(name = "category" , required = false, defaultValue = "ALL") final Category category,
+            @RequestParam(name = "sort",required = false, defaultValue = "LATEST") final SortType sortType) {
 
         DiaryListRes diaryListRes = diariesService.getDiariesResponse( category,sortType, false, userId);
         return ResponseEntity.ok(diaryListRes);
@@ -32,8 +32,8 @@ public class DiariesController {
     @GetMapping("/my")
     public ResponseEntity<DiaryListRes> getMyDiaries(
             @Valid @RequestHeader("userId") long userId,
-            @Valid @RequestParam(name = "category",required = false, defaultValue = "all") final Category category,
-            @RequestParam(name = "sort",required = false, defaultValue = "latest")final SortType sortType) {
+            @Valid @RequestParam(name = "category",required = false, defaultValue = "ALL") final Category category,
+            @RequestParam(name = "sort",required = false, defaultValue = "LATEST")final SortType sortType) {
 
         DiaryListRes diaryListRes = diariesService.getDiariesResponse(category, sortType,true,userId);
         return ResponseEntity.ok(diaryListRes);

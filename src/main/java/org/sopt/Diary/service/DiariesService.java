@@ -44,7 +44,7 @@ public class DiariesService {
         }
 
         // 선택된 카테고리에 따라 필터링
-        if (category != Category.all) {
+        if (category != Category.ALL) {
             diaryEntities = diaryEntities.stream()
                     .filter(diary -> diary.getCategory() == category)
                     .collect(Collectors.toList());
@@ -62,8 +62,8 @@ public class DiariesService {
 
     private Comparator<DiaryEntity> getComparator(SortType sortType) {
         return switch (sortType) {
-            case latest -> Comparator.comparing(DiaryEntity::getCreatedAt).reversed(); // 최신 순 정렬
-            case quantity -> Comparator.comparingInt((DiaryEntity diary) -> diary.getContent().length()).reversed(); // 내용 길이 기준 내림차순 정렬
+            case LATEST -> Comparator.comparing(DiaryEntity::getCreatedAt).reversed(); // 최신 순 정렬
+            case QUANTITY -> Comparator.comparingInt((DiaryEntity diary) -> diary.getContent().length()).reversed(); // 내용 길이 기준 내림차순 정렬
         };
     }
 
